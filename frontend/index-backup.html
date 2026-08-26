@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GrowthOS — AI Business Marketing</title>
+<meta name="description" content="Generate social content, offers and review replies for your business with AI.">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#08101f;color:#f7f9ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1050px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:900;font-size:23px}
+.pill{border:1px solid #293958;border-radius:999px;padding:7px 12px;color:#aab6d1;font-size:12px}
+.hero{text-align:center;padding:65px 10px 35px}
+.hero h1{font-size:clamp(40px,7vw,70px);line-height:1;margin:0 0 20px}
+.hero p{max-width:700px;margin:auto;color:#aab6d1;font-size:18px;line-height:1.6}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:#101b31;border:1px solid #293958;border-radius:18px;padding:24px}
+h2{margin-top:0}
+label{display:block;color:#aab6d1;font-size:13px;margin:14px 0 7px}
+input,textarea{width:100%;border:1px solid #334362;border-radius:10px;background:#071020;color:white;padding:13px;font:inherit}
+textarea{min-height:90px}
+button{width:100%;border:0;border-radius:10px;background:white;color:#08101f;font-weight:800;padding:14px;margin-top:17px;cursor:pointer}
+button:disabled{opacity:.5}
+.feature,.outbox{border:1px solid #293958;border-radius:12px;padding:14px;margin:10px 0}
+.feature b{display:block;margin-bottom:4px}
+.muted{color:#aab6d1}
+#results{display:none;margin-top:20px}
+.out{white-space:pre-wrap;line-height:1.6;color:#dce3f5}
+.pricing{margin-top:55px}
+.prices{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.price{background:#101b31;border:1px solid #293958;border-radius:15px;padding:20px}
+.price strong{font-size:28px}
+.price p{color:#aab6d1;min-height:38px}
+.price button{background:#202d4b;color:white}
+footer{text-align:center;color:#7583a4;padding:45px 0 15px;font-size:12px}
+@media(max-width:800px){
+.grid,.prices{grid-template-columns:1fr}
+.hero{padding-top:45px}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<nav class="nav">
+<div class="brand">GrowthOS</div>
+<div class="pill">AI Business Marketing OS</div>
+</nav>
+
+<section class="hero">
+<h1>Get a month of marketing ideas in seconds.</h1>
+<p>Enter your business details and generate practical social posts, video hooks, offers and customer-review replies.</p>
+</section>
+
+<section class="grid">
+
+<div class="card">
+<h2>Generate your free kit</h2>
+
+<label>Business type *</label>
+<input id="type" placeholder="Dentist, salon, realtor, gym...">
+
+<label>City / market</label>
+<input id="city" placeholder="Karachi">
+
+<label>Main product or service *</label>
+<textarea id="offer" placeholder="What do you sell?"></textarea>
+
+<label>Target customer</label>
+<input id="audience" placeholder="Families, homeowners, startups...">
+
+<button id="go">Generate Marketing Kit</button>
+
+<p id="status" class="muted"></p>
+</div>
+
+<div class="card">
+<h2>Included</h2>
+
+<div class="feature">
+<b>5 Social Posts</b>
+Ready-to-use business content.
+</div>
+
+<div class="feature">
+<b>5 Reel Hooks</b>
+Short hooks for videos.
+</div>
+
+<div class="feature">
+<b>3 Offers</b>
+Promotions customers can understand.
+</div>
+
+<div class="feature">
+<b>Review Response</b>
+Professional customer response.
+</div>
+
+</div>
+</section>
+
+<section id="results">
+<div class="card">
+<h2>Your Marketing Kit</h2>
+<div id="output"></div>
+</div>
+</section>
+
+<section class="pricing">
+<h2>Plans</h2>
+
+<div class="prices">
+
+<div class="price">
+<h3>Free</h3>
+<strong>$0</strong>
+<p>Starter AI generation.</p>
+</div>
+
+<div class="price">
+<h3>Starter</h3>
+<strong>$19</strong>
+<p>Complete one-time marketing bundle.</p>
+<button onclick="alert('Payment will be connected during launch.')">Get Starter</button>
+</div>
+
+<div class="price">
+<h3>Pro</h3>
+<strong>$49/mo</strong>
+<p>Monthly marketing system.</p>
+<button onclick="alert('Payment will be connected during launch.')">Start Pro</button>
+</div>
+
+<div class="price">
+<h3>Agency</h3>
+<strong>$399/mo</strong>
+<p>Multiple client workspaces.</p>
+<button onclick="alert('Payment will be connected during launch.')">Start Agency</button>
+</div>
+
+</div>
+</section>
+
+<footer>
+GrowthOS MVP
+</footer>
+
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+function escapeHtml(s){
+return String(s||"").replace(/[&<>"']/g,c=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[c]));
+}
+
+function demo(type,city,offer){
+return {
+social_posts:
+`1. ${type} in ${city||"your area"}: 3 things customers should know before choosing ${offer}.
+
+2. A common mistake customers make when buying ${offer}.
+
+3. Why customers choose us for ${offer}.
+
+4. Quick tip: how to get more value from ${offer}.
+
+5. FAQ: Who is ${offer} best for?`,
+
+reel_hooks:
+`1. Stop scrolling if you need ${offer}.
+
+2. 3 mistakes to avoid before buying ${offer}.
+
+3. What nobody tells you about ${offer}.
+
+4. Before vs after: ${offer}.
+
+5. Is ${offer} actually worth it?`,
+
+offers:
+`1. New-customer starter package.
+
+2. Limited-time consultation or assessment.
+
+3. Refer-a-friend customer bonus.`,
+
+review_response:
+`Thank you for your feedback and for trusting us. We're glad we could help and appreciate your support.`
+};
+}
+
+function show(data){
+$("output").innerHTML=[
+["Social Posts",data.social_posts],
+["Reel Hooks",data.reel_hooks],
+["Offers",data.offers],
+["Review Response",data.review_response]
+].map(x=>`
+<div class="outbox">
+<h3>${x[0]}</h3>
+<div class="out">${escapeHtml(x[1])}</div>
+</div>
+`).join("");
+
+$("results").style.display="block";
+$("results").scrollIntoView({behavior:"smooth"});
+}
+
+$("go").onclick=async()=>{
+
+let type=$("type").value.trim();
+let city=$("city").value.trim();
+let offer=$("offer").value.trim();
+let audience=$("audience").value.trim();
+
+if(!type||!offer){
+$("status").textContent="Please enter the required fields.";
+return;
+}
+
+$("go").disabled=true;
+$("status").textContent="Generating...";
+
+try{
+
+let response=await fetch("/api/generate",{
+method:"POST",
+headers:{"content-type":"application/json"},
+body:JSON.stringify({
+type,
+city,
+offer,
+audience
+})
+});
+
+let data=await response.json();
+
+if(!response.ok)
+throw new Error(data.error||"Request failed");
+
+show(data);
+
+$("status").textContent="Generated successfully.";
+
+}catch(error){
+
+show(demo(type,city,offer));
+
+$("status").textContent=
+"Demo result shown. AI will activate after the backend is connected.";
+
+}finally{
+
+$("go").disabled=false;
+
+}
+
+};
+</script>
+
+</body>
+</html>
