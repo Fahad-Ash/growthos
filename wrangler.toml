@@ -1,0 +1,7 @@
+name = "growthos"
+main = "worker/src/index.js"
+compatibility_date = "2026-08-26"
+
+[assets]
+directory = "./frontend"
+binding = "ASSETS"
