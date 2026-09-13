@@ -7,3 +7,11 @@ compatibility_date = "2026-08-26"
 [assets]
 directory = "./frontend"
 binding = "ASSETS"
+
+[secrets]
+required = [
+  "GEMINI_API_KEY",
+  "SUPABASE_ANON_KEY",
+  "SUPABASE_URL",
+  "SUPABASE_SECRET_KEY"
+]
