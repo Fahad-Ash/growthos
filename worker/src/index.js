@@ -2,9 +2,9 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // --------------------------------------------------
+    // ==================================================
     // CORS / OPTIONS
-    // --------------------------------------------------
+    // ==================================================
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -12,9 +12,9 @@ export default {
       });
     }
 
-    // --------------------------------------------------
+    // ==================================================
     // HEALTH CHECK
-    // --------------------------------------------------
+    // ==================================================
     if (url.pathname === "/health") {
       return json({
         ok: true,
@@ -27,9 +27,9 @@ export default {
       });
     }
 
-    // --------------------------------------------------
+    // ==================================================
     // GENERATE MARKETING KIT
-    // --------------------------------------------------
+    // ==================================================
     if (
       url.pathname === "/api/generate" &&
       request.method === "POST"
@@ -53,7 +53,7 @@ async function handleGenerate(request, env) {
   try {
 
     // --------------------------------------------------
-    // 1. CHECK REQUIRED ENVIRONMENT VARIABLES
+    // 1. CHECK CONFIGURATION
     // --------------------------------------------------
 
     if (!env.GEMINI_API_KEY) {
@@ -76,7 +76,7 @@ async function handleGenerate(request, env) {
 
 
     // --------------------------------------------------
-    // 2. GET AUTHENTICATED USER
+    // 2. AUTHENTICATE USER
     // --------------------------------------------------
 
     const authHeader =
@@ -92,7 +92,7 @@ async function handleGenerate(request, env) {
     }
 
     const accessToken =
-      authHeader.slice(7).trim();
+      authHeader.substring(7).trim();
 
     if (!accessToken) {
       return json({
@@ -100,10 +100,6 @@ async function handleGenerate(request, env) {
       }, 401);
     }
 
-
-    // --------------------------------------------------
-    // VERIFY USER WITH SUPABASE
-    // --------------------------------------------------
 
     const userResponse = await fetch(
       `${env.SUPABASE_URL}/auth/v1/user`,
@@ -116,12 +112,14 @@ async function handleGenerate(request, env) {
       }
     );
 
+
     if (!userResponse.ok) {
       const authError =
         await userResponse.text();
 
       console.error(
-        "Supabase user validation failed:",
+        "AUTH_VALIDATION_FAILED:",
+        userResponse.status,
         authError
       );
 
@@ -131,15 +129,18 @@ async function handleGenerate(request, env) {
       }, 401);
     }
 
+
     const user =
       await userResponse.json();
 
-    if (!user?.id) {
+
+    if (!user || !user.id) {
       return json({
         error:
           "Unable to identify authenticated user."
       }, 401);
     }
+
 
     const userId = user.id;
 
@@ -154,9 +155,11 @@ async function handleGenerate(request, env) {
       body = await request.json();
     } catch {
       return json({
-        error: "Invalid JSON request body."
+        error:
+          "Invalid JSON request body."
       }, 400);
     }
+
 
     const businessType =
       String(body?.type || "").trim();
@@ -180,35 +183,48 @@ async function handleGenerate(request, env) {
 
 
     // --------------------------------------------------
-    // 4. LOAD GROWTHOS PROFILE
+    // 4. LOAD USER PROFILE
     // --------------------------------------------------
+
+    const profilePath =
+      `/rest/v1/profiles` +
+      `?id=eq.${encodeURIComponent(userId)}` +
+      `&select=id,full_name,plan,generations_used,generations_limit`;
+
 
     const profileResponse =
       await supabaseRequest(
         env,
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(
-          userId
-        )}&select=id,full_name,plan,generations_used,generations_limit`,
+        profilePath,
         {
           method: "GET"
         }
       );
 
 
+    // IMPORTANT:
+    // Return the REAL Supabase error temporarily.
+    // This lets us identify the exact problem.
     if (!profileResponse.ok) {
 
       const profileError =
         await profileResponse.text();
 
       console.error(
-        "Profile lookup failed:",
+        "PROFILE_LOOKUP_FAILED:",
         profileResponse.status,
         profileError
       );
 
       return json({
         error:
-          "Unable to load your GrowthOS profile."
+          "PROFILE_LOOKUP_FAILED",
+
+        supabase_status:
+          profileResponse.status,
+
+        supabase_error:
+          profileError
       }, 500);
     }
 
@@ -220,19 +236,19 @@ async function handleGenerate(request, env) {
     if (!Array.isArray(profiles)) {
 
       console.error(
-        "Unexpected profile response:",
+        "PROFILE_RESPONSE_INVALID:",
         profiles
       );
 
       return json({
         error:
-          "Unable to load your GrowthOS profile."
+          "PROFILE_RESPONSE_INVALID"
       }, 500);
     }
 
 
     // --------------------------------------------------
-    // CREATE PROFILE IF IT DOES NOT EXIST
+    // 5. CREATE PROFILE IF MISSING
     // --------------------------------------------------
 
     if (profiles.length === 0) {
@@ -259,13 +275,17 @@ async function handleGenerate(request, env) {
             body: JSON.stringify({
               id: userId,
 
-              full_name: fullName,
+              full_name:
+                fullName,
 
-              plan: "free",
+              plan:
+                "free",
 
-              generations_used: 0,
+              generations_used:
+                0,
 
-              generations_limit: 3
+              generations_limit:
+                3
             })
           }
         );
@@ -277,14 +297,20 @@ async function handleGenerate(request, env) {
           await createProfileResponse.text();
 
         console.error(
-          "Profile creation failed:",
+          "PROFILE_CREATION_FAILED:",
           createProfileResponse.status,
           createError
         );
 
         return json({
           error:
-            "Unable to create your GrowthOS profile."
+            "PROFILE_CREATION_FAILED",
+
+          supabase_status:
+            createProfileResponse.status,
+
+          supabase_error:
+            createError
         }, 500);
       }
 
@@ -299,13 +325,13 @@ async function handleGenerate(request, env) {
       ) {
 
         console.error(
-          "Profile creation returned unexpected data:",
+          "PROFILE_CREATION_EMPTY_RESPONSE:",
           profiles
         );
 
         return json({
           error:
-            "Unable to create your GrowthOS profile."
+            "PROFILE_CREATION_EMPTY_RESPONSE"
         }, 500);
       }
     }
@@ -316,14 +342,19 @@ async function handleGenerate(request, env) {
 
 
     // --------------------------------------------------
-    // 5. CHECK GENERATION LIMIT
+    // 6. NORMALIZE PROFILE VALUES
     // --------------------------------------------------
 
     const used =
-      Number(profile.generations_used ?? 0);
+      Number(
+        profile.generations_used ?? 0
+      );
+
 
     const limit =
-      Number(profile.generations_limit ?? 3);
+      Number(
+        profile.generations_limit ?? 3
+      );
 
 
     if (
@@ -332,7 +363,7 @@ async function handleGenerate(request, env) {
     ) {
 
       console.error(
-        "Invalid profile generation values:",
+        "PROFILE_GENERATION_VALUES_INVALID:",
         profile
       );
 
@@ -342,6 +373,10 @@ async function handleGenerate(request, env) {
       }, 500);
     }
 
+
+    // --------------------------------------------------
+    // 7. CHECK GENERATION LIMIT
+    // --------------------------------------------------
 
     if (used >= limit) {
 
@@ -362,7 +397,7 @@ async function handleGenerate(request, env) {
 
 
     // --------------------------------------------------
-    // 6. GENERATE AI MARKETING KIT
+    // 8. GEMINI PROMPT
     // --------------------------------------------------
 
     const prompt = `
@@ -415,11 +450,19 @@ Do not invent:
 `;
 
 
+    // --------------------------------------------------
+    // 9. CALL GEMINI
+    // --------------------------------------------------
+
+    const geminiUrl =
+      `https://generativelanguage.googleapis.com/` +
+      `v1beta/models/gemini-2.5-flash:generateContent` +
+      `?key=${encodeURIComponent(env.GEMINI_API_KEY)}`;
+
+
     const aiResponse =
       await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(
-          env.GEMINI_API_KEY
-        )}`,
+        geminiUrl,
         {
           method: "POST",
 
@@ -433,7 +476,8 @@ Do not invent:
               {
                 parts: [
                   {
-                    text: prompt
+                    text:
+                      prompt
                   }
                 ]
               }
@@ -453,13 +497,14 @@ Do not invent:
 
 
     // --------------------------------------------------
-    // GEMINI API ERROR
+    // 10. GEMINI ERROR
     // --------------------------------------------------
 
     if (!aiResponse.ok) {
 
       console.error(
-        "Gemini API error:",
+        "GEMINI_API_ERROR:",
+        aiResponse.status,
         JSON.stringify(aiData)
       );
 
@@ -472,7 +517,7 @@ Do not invent:
 
 
     // --------------------------------------------------
-    // GET GEMINI RESPONSE TEXT
+    // 11. GET GEMINI TEXT
     // --------------------------------------------------
 
     const text =
@@ -485,7 +530,7 @@ Do not invent:
     if (!text) {
 
       console.error(
-        "Gemini returned empty response:",
+        "GEMINI_EMPTY_RESPONSE:",
         JSON.stringify(aiData)
       );
 
@@ -497,7 +542,7 @@ Do not invent:
 
 
     // --------------------------------------------------
-    // PARSE AI JSON
+    // 12. PARSE AI JSON
     // --------------------------------------------------
 
     let result;
@@ -510,7 +555,7 @@ Do not invent:
     } catch (parseError) {
 
       console.error(
-        "Gemini JSON parse failed:",
+        "GEMINI_JSON_PARSE_FAILED:",
         parseError,
         text
       );
@@ -523,7 +568,7 @@ Do not invent:
 
 
     // --------------------------------------------------
-    // 7. SAVE MARKETING KIT
+    // 13. SAVE MARKETING KIT
     // --------------------------------------------------
 
     const kitResponse =
@@ -568,20 +613,26 @@ Do not invent:
         await kitResponse.text();
 
       console.error(
-        "Marketing kit save failed:",
+        "MARKETING_KIT_SAVE_FAILED:",
         kitResponse.status,
         kitError
       );
 
       return json({
         error:
-          "Marketing kit was generated but could not be saved."
+          "Marketing kit was generated but could not be saved.",
+
+        supabase_status:
+          kitResponse.status,
+
+        supabase_error:
+          kitError
       }, 500);
     }
 
 
     // --------------------------------------------------
-    // 8. UPDATE PROFILE GENERATION USAGE
+    // 14. UPDATE PROFILE USAGE
     // --------------------------------------------------
 
     const newUsed =
@@ -617,7 +668,7 @@ Do not invent:
     if (!updateProfileResponse.ok) {
 
       console.error(
-        "Profile usage update failed:",
+        "PROFILE_USAGE_UPDATE_FAILED:",
         updateProfileResponse.status,
         await updateProfileResponse.text()
       );
@@ -625,7 +676,7 @@ Do not invent:
 
 
     // --------------------------------------------------
-    // 9. UPDATE USAGE TABLE
+    // 15. UPDATE USAGE TABLE
     // --------------------------------------------------
 
     const today =
@@ -686,7 +737,7 @@ Do not invent:
     if (!usageResponse.ok) {
 
       console.error(
-        "Usage update failed:",
+        "USAGE_UPDATE_FAILED:",
         usageResponse.status,
         await usageResponse.text()
       );
@@ -694,7 +745,7 @@ Do not invent:
 
 
     // --------------------------------------------------
-    // 10. RETURN RESULT TO FRONTEND
+    // 16. RETURN RESULT
     // --------------------------------------------------
 
     return json({
@@ -715,7 +766,7 @@ Do not invent:
   } catch (error) {
 
     console.error(
-      "GrowthOS error:",
+      "GROWTHOS_UNHANDLED_ERROR:",
       error
     );
 
@@ -731,7 +782,7 @@ Do not invent:
 
 
 // ======================================================
-// SUPABASE REST HELPER
+// SUPABASE REST REQUEST
 // ======================================================
 
 async function supabaseRequest(
@@ -775,7 +826,7 @@ async function supabaseRequest(
 
 
 // ======================================================
-// JSON RESPONSE HELPER
+// JSON RESPONSE
 // ======================================================
 
 function json(
