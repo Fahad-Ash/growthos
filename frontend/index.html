@@ -1811,13 +1811,38 @@
 
       $("go").disabled = true;
       $("status").textContent =
-        "GrowthOS AI is building your campaign...";
+        "Checking your GrowthOS session...";
 
       try{
+        const {
+          data: { session },
+          error: sessionError
+        } = await window.growthosSupabase.auth.getSession();
+
+        if(sessionError){
+          throw sessionError;
+        }
+
+        if(!session || !session.access_token){
+          $("status").textContent =
+            "Please login to GrowthOS before generating a campaign.";
+
+          const loginButton = document.getElementById("loginBtn");
+          if(loginButton){
+            loginButton.click();
+          }
+
+          return;
+        }
+
+        $("status").textContent =
+          "GrowthOS AI is building your campaign...";
+
         const response = await fetch("/api/generate", {
           method:"POST",
           headers:{
-            "content-type":"application/json"
+            "Content-Type":"application/json",
+            "Authorization":`Bearer ${session.access_token}`
           },
           body:JSON.stringify({
             type,
@@ -1827,42 +1852,48 @@
           })
         });
 
-        const data = await response.json();
+        let data;
+
+        try{
+          data = await response.json();
+        }catch{
+          throw new Error("GrowthOS returned an invalid server response.");
+        }
 
         if(!response.ok){
+          if(response.status === 401){
+            $("status").textContent =
+              "Your login session has expired. Please login again.";
+
+            await window.growthosSupabase.auth.signOut();
+
+            const loginButton = document.getElementById("loginBtn");
+            if(loginButton){
+              loginButton.click();
+            }
+
+            return;
+          }
+
           throw new Error(data.error || "AI request failed.");
         }
 
         showMarketingKit(data);
 
-        if(window.saveMarketingKit){
-          const saveResult = await window.saveMarketingKit({
-            type,
-            city,
-            offer,
-            audience,
-            result:data
-          });
+        /*
+          The Worker already saves the generated campaign to Supabase.
+          Do not call window.saveMarketingKit() here, otherwise the same
+          campaign would be inserted twice.
+        */
+        $("status").textContent =
+          "Campaign generated and saved ✓";
 
-          if(saveResult.success){
-            $("status").textContent =
-              "Campaign generated and saved ✓";
-
-            if(window.loadCampaigns){
-              await window.loadCampaigns();
-            }
-          }else{
-            $("status").textContent =
-              "Campaign generated, but it could not be saved: " +
-              saveResult.error;
-          }
-        }else{
-          $("status").textContent =
-            "Campaign generated successfully ✓";
+        if(window.loadCampaigns){
+          await window.loadCampaigns();
         }
 
       }catch(error){
-        console.error(error);
+        console.error("GrowthOS generation error:", error);
 
         $("status").textContent =
           error.message || "Could not generate campaign.";
