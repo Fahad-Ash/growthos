@@ -3,8 +3,9 @@ export default {
     const url = new URL(request.url);
 
     // ==================================================
-    // CORS / OPTIONS
+    // CORS PREFLIGHT
     // ==================================================
+
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -15,6 +16,7 @@ export default {
     // ==================================================
     // HEALTH CHECK
     // ==================================================
+
     if (url.pathname === "/health") {
       return json({
         ok: true,
@@ -22,14 +24,17 @@ export default {
         configuration: {
           geminiConfigured: Boolean(env.GEMINI_API_KEY),
           supabaseUrlConfigured: Boolean(env.SUPABASE_URL),
-          supabaseSecretConfigured: Boolean(env.SUPABASE_SECRET_KEY)
+          supabaseSecretConfigured: Boolean(
+            env.SUPABASE_SECRET_KEY
+          )
         }
       });
     }
 
     // ==================================================
-    // GENERATE MARKETING KIT
+    // GENERATE
     // ==================================================
+
     if (
       url.pathname === "/api/generate" &&
       request.method === "POST"
@@ -37,10 +42,17 @@ export default {
       return handleGenerate(request, env);
     }
 
-    return new Response("GrowthOS API is running.", {
-      status: 200,
-      headers: corsHeaders()
-    });
+    // ==================================================
+    // DEFAULT
+    // ==================================================
+
+    return new Response(
+      "GrowthOS API is running.",
+      {
+        status: 200,
+        headers: corsHeaders()
+      }
+    );
   }
 };
 
@@ -52,9 +64,9 @@ export default {
 async function handleGenerate(request, env) {
   try {
 
-    // --------------------------------------------------
-    // 1. CHECK CONFIGURATION
-    // --------------------------------------------------
+    // ==================================================
+    // CHECK ENVIRONMENT
+    // ==================================================
 
     if (!env.GEMINI_API_KEY) {
       return json({
@@ -70,14 +82,15 @@ async function handleGenerate(request, env) {
 
     if (!env.SUPABASE_SECRET_KEY) {
       return json({
-        error: "SUPABASE_SECRET_KEY is not configured."
+        error:
+          "SUPABASE_SECRET_KEY is not configured."
       }, 500);
     }
 
 
-    // --------------------------------------------------
-    // 2. AUTHENTICATE USER
-    // --------------------------------------------------
+    // ==================================================
+    // AUTHORIZATION HEADER
+    // ==================================================
 
     const authHeader =
       request.headers.get("Authorization");
@@ -101,19 +114,26 @@ async function handleGenerate(request, env) {
     }
 
 
+    // ==================================================
+    // VALIDATE USER SESSION WITH SUPABASE
+    // ==================================================
+
     const userResponse = await fetch(
       `${env.SUPABASE_URL}/auth/v1/user`,
       {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
-          "apikey": env.SUPABASE_SECRET_KEY
+          "Authorization":
+            `Bearer ${accessToken}`,
+
+          "apikey":
+            env.SUPABASE_SECRET_KEY
         }
       }
     );
 
-
     if (!userResponse.ok) {
+
       const authError =
         await userResponse.text();
 
@@ -129,10 +149,8 @@ async function handleGenerate(request, env) {
       }, 401);
     }
 
-
     const user =
       await userResponse.json();
-
 
     if (!user || !user.id) {
       return json({
@@ -141,13 +159,12 @@ async function handleGenerate(request, env) {
       }, 401);
     }
 
-
     const userId = user.id;
 
 
-    // --------------------------------------------------
-    // 3. READ REQUEST BODY
-    // --------------------------------------------------
+    // ==================================================
+    // READ REQUEST BODY
+    // ==================================================
 
     let body;
 
@@ -160,6 +177,10 @@ async function handleGenerate(request, env) {
       }, 400);
     }
 
+
+    // ==================================================
+    // REQUEST FIELDS
+    // ==================================================
 
     const businessType =
       String(body?.type || "").trim();
@@ -182,15 +203,14 @@ async function handleGenerate(request, env) {
     }
 
 
-    // --------------------------------------------------
-    // 4. LOAD USER PROFILE
-    // --------------------------------------------------
+    // ==================================================
+    // LOAD USER PROFILE
+    // ==================================================
 
     const profilePath =
       `/rest/v1/profiles` +
       `?id=eq.${encodeURIComponent(userId)}` +
       `&select=id,full_name,plan,generations_used,generations_limit`;
-
 
     const profileResponse =
       await supabaseRequest(
@@ -202,9 +222,10 @@ async function handleGenerate(request, env) {
       );
 
 
-    // IMPORTANT:
-    // Return the REAL Supabase error temporarily.
-    // This lets us identify the exact problem.
+    // ==================================================
+    // PROFILE LOOKUP ERROR
+    // ==================================================
+
     if (!profileResponse.ok) {
 
       const profileError =
@@ -216,21 +237,50 @@ async function handleGenerate(request, env) {
         profileError
       );
 
-      return json({
-        error:
+      return new Response(
+        [
           "PROFILE_LOOKUP_FAILED",
-
-        supabase_status:
-          profileResponse.status,
-
-        supabase_error:
+          "",
+          `HTTP STATUS: ${profileResponse.status}`,
+          "",
+          "SUPABASE ERROR:",
           profileError
-      }, 500);
+        ].join("\n"),
+        {
+          status: 500,
+
+          headers: {
+            "Content-Type":
+              "text/plain; charset=UTF-8",
+
+            ...corsHeaders()
+          }
+        }
+      );
     }
 
 
-    let profiles =
-      await profileResponse.json();
+    // ==================================================
+    // PARSE PROFILE RESPONSE
+    // ==================================================
+
+    let profiles;
+
+    try {
+      profiles =
+        await profileResponse.json();
+    } catch (error) {
+
+      console.error(
+        "PROFILE_RESPONSE_JSON_FAILED:",
+        error
+      );
+
+      return json({
+        error:
+          "PROFILE_RESPONSE_JSON_FAILED"
+      }, 500);
+    }
 
 
     if (!Array.isArray(profiles)) {
@@ -242,14 +292,17 @@ async function handleGenerate(request, env) {
 
       return json({
         error:
-          "PROFILE_RESPONSE_INVALID"
+          "PROFILE_RESPONSE_INVALID",
+
+        response:
+          profiles
       }, 500);
     }
 
 
-    // --------------------------------------------------
-    // 5. CREATE PROFILE IF MISSING
-    // --------------------------------------------------
+    // ==================================================
+    // CREATE PROFILE IF MISSING
+    // ==================================================
 
     if (profiles.length === 0) {
 
@@ -291,6 +344,10 @@ async function handleGenerate(request, env) {
         );
 
 
+      // ================================================
+      // PROFILE CREATION ERROR
+      // ================================================
+
       if (!createProfileResponse.ok) {
 
         const createError =
@@ -302,21 +359,48 @@ async function handleGenerate(request, env) {
           createError
         );
 
-        return json({
-          error:
+        return new Response(
+          [
             "PROFILE_CREATION_FAILED",
-
-          supabase_status:
-            createProfileResponse.status,
-
-          supabase_error:
+            "",
+            `HTTP STATUS: ${createProfileResponse.status}`,
+            "",
+            "SUPABASE ERROR:",
             createError
-        }, 500);
+          ].join("\n"),
+          {
+            status: 500,
+
+            headers: {
+              "Content-Type":
+                "text/plain; charset=UTF-8",
+
+              ...corsHeaders()
+            }
+          }
+        );
       }
 
 
-      profiles =
-        await createProfileResponse.json();
+      // ================================================
+      // READ CREATED PROFILE
+      // ================================================
+
+      try {
+        profiles =
+          await createProfileResponse.json();
+      } catch (error) {
+
+        console.error(
+          "PROFILE_CREATION_JSON_FAILED:",
+          error
+        );
+
+        return json({
+          error:
+            "PROFILE_CREATION_JSON_FAILED"
+        }, 500);
+      }
 
 
       if (
@@ -337,13 +421,13 @@ async function handleGenerate(request, env) {
     }
 
 
+    // ==================================================
+    // PROFILE
+    // ==================================================
+
     const profile =
       profiles[0];
 
-
-    // --------------------------------------------------
-    // 6. NORMALIZE PROFILE VALUES
-    // --------------------------------------------------
 
     const used =
       Number(
@@ -356,6 +440,10 @@ async function handleGenerate(request, env) {
         profile.generations_limit ?? 3
       );
 
+
+    // ==================================================
+    // VALIDATE GENERATION SETTINGS
+    // ==================================================
 
     if (
       !Number.isFinite(used) ||
@@ -374,9 +462,9 @@ async function handleGenerate(request, env) {
     }
 
 
-    // --------------------------------------------------
-    // 7. CHECK GENERATION LIMIT
-    // --------------------------------------------------
+    // ==================================================
+    // GENERATION LIMIT
+    // ==================================================
 
     if (used >= limit) {
 
@@ -396,9 +484,9 @@ async function handleGenerate(request, env) {
     }
 
 
-    // --------------------------------------------------
-    // 8. GEMINI PROMPT
-    // --------------------------------------------------
+    // ==================================================
+    // GEMINI PROMPT
+    // ==================================================
 
     const prompt = `
 You are a practical small-business marketing strategist.
@@ -450,14 +538,16 @@ Do not invent:
 `;
 
 
-    // --------------------------------------------------
-    // 9. CALL GEMINI
-    // --------------------------------------------------
+    // ==================================================
+    // GEMINI API
+    // ==================================================
 
     const geminiUrl =
       `https://generativelanguage.googleapis.com/` +
       `v1beta/models/gemini-2.5-flash:generateContent` +
-      `?key=${encodeURIComponent(env.GEMINI_API_KEY)}`;
+      `?key=${encodeURIComponent(
+        env.GEMINI_API_KEY
+      )}`;
 
 
     const aiResponse =
@@ -492,13 +582,19 @@ Do not invent:
       );
 
 
-    const aiData =
-      await aiResponse.json();
+    let aiData;
+
+    try {
+      aiData =
+        await aiResponse.json();
+    } catch {
+      aiData = null;
+    }
 
 
-    // --------------------------------------------------
-    // 10. GEMINI ERROR
-    // --------------------------------------------------
+    // ==================================================
+    // GEMINI ERROR
+    // ==================================================
 
     if (!aiResponse.ok) {
 
@@ -516,9 +612,9 @@ Do not invent:
     }
 
 
-    // --------------------------------------------------
-    // 11. GET GEMINI TEXT
-    // --------------------------------------------------
+    // ==================================================
+    // GET GEMINI TEXT
+    // ==================================================
 
     const text =
       aiData
@@ -541,9 +637,9 @@ Do not invent:
     }
 
 
-    // --------------------------------------------------
-    // 12. PARSE AI JSON
-    // --------------------------------------------------
+    // ==================================================
+    // PARSE AI JSON
+    // ==================================================
 
     let result;
 
@@ -567,9 +663,9 @@ Do not invent:
     }
 
 
-    // --------------------------------------------------
-    // 13. SAVE MARKETING KIT
-    // --------------------------------------------------
+    // ==================================================
+    // SAVE MARKETING KIT
+    // ==================================================
 
     const kitResponse =
       await supabaseRequest(
@@ -607,6 +703,10 @@ Do not invent:
       );
 
 
+    // ==================================================
+    // MARKETING KIT SAVE ERROR
+    // ==================================================
+
     if (!kitResponse.ok) {
 
       const kitError =
@@ -618,22 +718,32 @@ Do not invent:
         kitError
       );
 
-      return json({
-        error:
-          "Marketing kit was generated but could not be saved.",
-
-        supabase_status:
-          kitResponse.status,
-
-        supabase_error:
+      return new Response(
+        [
+          "MARKETING_KIT_SAVE_FAILED",
+          "",
+          `HTTP STATUS: ${kitResponse.status}`,
+          "",
+          "SUPABASE ERROR:",
           kitError
-      }, 500);
+        ].join("\n"),
+        {
+          status: 500,
+
+          headers: {
+            "Content-Type":
+              "text/plain; charset=UTF-8",
+
+            ...corsHeaders()
+          }
+        }
+      );
     }
 
 
-    // --------------------------------------------------
-    // 14. UPDATE PROFILE USAGE
-    // --------------------------------------------------
+    // ==================================================
+    // UPDATE GENERATION COUNT
+    // ==================================================
 
     const newUsed =
       used + 1;
@@ -665,19 +775,28 @@ Do not invent:
       );
 
 
+    // ==================================================
+    // PROFILE UPDATE ERROR
+    // ==================================================
+
     if (!updateProfileResponse.ok) {
+
+      const updateError =
+        await updateProfileResponse.text();
 
       console.error(
         "PROFILE_USAGE_UPDATE_FAILED:",
         updateProfileResponse.status,
-        await updateProfileResponse.text()
+        updateError
       );
+
+      // Do not fail the whole generation.
     }
 
 
-    // --------------------------------------------------
-    // 15. UPDATE USAGE TABLE
-    // --------------------------------------------------
+    // ==================================================
+    // USAGE PERIOD
+    // ==================================================
 
     const today =
       new Date();
@@ -703,6 +822,10 @@ Do not invent:
         .toISOString()
         .slice(0, 10);
 
+
+    // ==================================================
+    // SAVE USAGE
+    // ==================================================
 
     const usageResponse =
       await supabaseRequest(
@@ -734,19 +857,28 @@ Do not invent:
       );
 
 
+    // ==================================================
+    // USAGE ERROR
+    // ==================================================
+
     if (!usageResponse.ok) {
+
+      const usageError =
+        await usageResponse.text();
 
       console.error(
         "USAGE_UPDATE_FAILED:",
         usageResponse.status,
-        await usageResponse.text()
+        usageError
       );
+
+      // Do not fail the generation.
     }
 
 
-    // --------------------------------------------------
-    // 16. RETURN RESULT
-    // --------------------------------------------------
+    // ==================================================
+    // SUCCESS
+    // ==================================================
 
     return json({
 
