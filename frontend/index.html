@@ -1,1680 +1,1876 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GrowthOS — AI Marketing Engine</title>
-<meta name="description" content="Turn one business idea into a month of marketing content with GrowthOS AI.">
-
-<style>
-:root{
-  --bg:#050816;
-  --bg2:#0a1024;
-  --card:rgba(16,24,48,.72);
-  --card2:rgba(20,30,58,.9);
-  --border:rgba(255,255,255,.09);
-  --text:#f7f9ff;
-  --muted:#9aa8c7;
-  --accent:#7c5cff;
-  --accent2:#00d4ff;
-  --success:#38e8a3;
-  --danger:#ff6b8a;
-}
-
-*{box-sizing:border-box}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  margin:0;
-  color:var(--text);
-  background:
-    radial-gradient(circle at 15% 10%,rgba(124,92,255,.20),transparent 28%),
-    radial-gradient(circle at 85% 15%,rgba(0,212,255,.13),transparent 25%),
-    radial-gradient(circle at 50% 75%,rgba(124,92,255,.08),transparent 30%),
-    var(--bg);
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  min-height:100vh;
-}
-
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:60px 60px;
-  mask-image:linear-gradient(to bottom,black,transparent 80%);
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-button,input,textarea{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.container{
-  width:min(1120px,calc(100% - 36px));
-  margin:auto;
-}
-
-/* NAV */
-
-.nav{
-  position:sticky;
-  top:0;
-  z-index:100;
-  backdrop-filter:blur(18px);
-  background:rgba(5,8,22,.72);
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
-
-.nav-inner{
-  height:76px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:11px;
-  font-weight:900;
-  font-size:22px;
-  letter-spacing:-.5px;
-}
-
-.logo-mark{
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 0 35px rgba(124,92,255,.35);
-  color:white;
-  font-weight:1000;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:28px;
-  color:var(--muted);
-  font-size:14px;
-}
-
-.nav-links a:hover{
-  color:white;
-}
-
-.nav-actions{
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.nav-btn{
-  width:auto;
-  margin:0;
-  padding:10px 17px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.05);
-  color:white;
-  font-weight:700;
-}
-
-.nav-btn.primary{
-  border:0;
-  background:linear-gradient(135deg,var(--accent),#5e7cff);
-  box-shadow:0 8px 30px rgba(124,92,255,.25);
-}
-
-/* HERO */
-
-.hero{
-  text-align:center;
-  padding:105px 0 75px;
-  position:relative;
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 13px;
-  border:1px solid rgba(124,92,255,.35);
-  background:rgba(124,92,255,.09);
-  border-radius:999px;
-  color:#c9c0ff;
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:24px;
-}
-
-.badge-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--success);
-  box-shadow:0 0 12px var(--success);
-}
-
-.hero h1{
-  max-width:900px;
-  margin:0 auto;
-  font-size:clamp(48px,8vw,88px);
-  line-height:.98;
-  letter-spacing:-4px;
-}
-
-.gradient-text{
-  background:linear-gradient(100deg,#fff 10%,#a996ff 48%,#5ee7ff 90%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
-
-.hero p{
-  max-width:680px;
-  margin:26px auto 0;
-  color:var(--muted);
-  font-size:18px;
-  line-height:1.7;
-}
-
-.hero-actions{
-  margin-top:32px;
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.hero-btn{
-  width:auto;
-  margin:0;
-  padding:15px 24px;
-  border-radius:12px;
-  border:0;
-  color:white;
-  font-weight:800;
-  background:linear-gradient(135deg,var(--accent),#5d80ff);
-  box-shadow:0 15px 45px rgba(124,92,255,.25);
-}
-
-.hero-btn.secondary{
-  background:rgba(255,255,255,.055);
-  border:1px solid var(--border);
-  box-shadow:none;
-}
-
-.hero-note{
-  margin-top:18px;
-  color:#687697;
-  font-size:12px;
-}
-
-/* STATS */
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:75px;
-}
-
-.stat{
-  padding:22px;
-  text-align:center;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.025);
-  border-radius:16px;
-}
-
-.stat strong{
-  display:block;
-  font-size:25px;
-}
-
-.stat span{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  margin-top:5px;
-}
-
-/* GENERATOR */
-
-.section-heading{
-  text-align:center;
-  margin-bottom:35px;
-}
-
-.section-heading .eyebrow{
-  color:#9586ff;
-  text-transform:uppercase;
-  letter-spacing:2px;
-  font-size:11px;
-  font-weight:800;
-}
-
-.section-heading h2{
-  font-size:clamp(32px,5vw,52px);
-  margin:10px 0;
-  letter-spacing:-2px;
-}
-
-.section-heading p{
-  color:var(--muted);
-  max-width:620px;
-  margin:auto;
-  line-height:1.6;
-}
-
-.generator{
-  display:grid;
-  grid-template-columns:390px 1fr;
-  gap:18px;
-  align-items:start;
-}
-
-.card{
-  border:1px solid var(--border);
-  background:linear-gradient(145deg,rgba(20,29,58,.86),rgba(10,16,34,.82));
-  backdrop-filter:blur(20px);
-  border-radius:22px;
-  padding:25px;
-  box-shadow:0 20px 80px rgba(0,0,0,.2);
-}
-
-.card-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:22px;
-}
-
-.card-title{
-  font-size:19px;
-  font-weight:850;
-}
-
-.card-subtitle{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:5px;
-}
-
-.ai-badge{
-  padding:6px 9px;
-  border-radius:8px;
-  font-size:10px;
-  font-weight:800;
-  background:rgba(56,232,163,.08);
-  color:var(--success);
-  border:1px solid rgba(56,232,163,.15);
-}
-
-label{
-  display:block;
-  color:#b3bed5;
-  font-size:12px;
-  font-weight:700;
-  margin:17px 0 8px;
-}
-
-input,textarea{
-  width:100%;
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:12px;
-  background:rgba(3,8,20,.72);
-  color:white;
-  padding:13px 14px;
-  outline:none;
-  transition:.2s;
-}
-
-input:focus,textarea:focus{
-  border-color:rgba(124,92,255,.7);
-  box-shadow:0 0 0 3px rgba(124,92,255,.09);
-}
-
-textarea{
-  min-height:105px;
-  resize:vertical;
-}
-
-.generate{
-  width:100%;
-  border:0;
-  border-radius:12px;
-  margin-top:20px;
-  padding:15px;
-  color:white;
-  font-weight:850;
-  background:linear-gradient(135deg,var(--accent),#5f82ff);
-  box-shadow:0 12px 35px rgba(124,92,255,.2);
-  transition:.2s;
-}
-
-.generate:hover{
-  transform:translateY(-1px);
-  box-shadow:0 17px 45px rgba(124,92,255,.3);
-}
-
-.generate:disabled{
-  opacity:.55;
-  transform:none;
-}
-
-.status{
-  min-height:20px;
-  text-align:center;
-  margin:13px 0 0;
-  color:var(--muted);
-  font-size:12px;
-}
-
-/* OUTPUT */
-
-.output-card{
-  min-height:100%;
-}
-
-.empty-state{
-  min-height:420px;
-  display:grid;
-  place-items:center;
-  text-align:center;
-  color:var(--muted);
-}
-
-.empty-icon{
-  width:70px;
-  height:70px;
-  margin:auto;
-  display:grid;
-  place-items:center;
-  border-radius:20px;
-  background:rgba(124,92,255,.1);
-  border:1px solid rgba(124,92,255,.18);
-  font-size:30px;
-}
-
-.empty-state h3{
-  color:white;
-  margin:17px 0 7px;
-}
-
-.output-section{
-  border:1px solid var(--border);
-  border-radius:15px;
-  background:rgba(255,255,255,.025);
-  padding:18px;
-  margin:12px 0;
-}
-
-.output-section h3{
-  margin:0 0 12px;
-  font-size:14px;
-}
-
-.out{
-  white-space:pre-wrap;
-  color:#cdd6ea;
-  line-height:1.7;
-  font-size:13px;
-}
-
-.copy-btn{
-  width:auto;
-  margin:12px 0 0;
-  padding:7px 11px;
-  background:rgba(255,255,255,.06);
-  border:1px solid var(--border);
-  color:#c9d2e8;
-  font-size:11px;
-}
-
-/* FEATURES */
-
-.features{
-  padding:120px 0 90px;
-}
-
-.feature-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-
-.feature{
-  padding:26px;
-  border-radius:18px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.025);
-  transition:.25s;
-}
-
-.feature:hover{
-  transform:translateY(-4px);
-  border-color:rgba(124,92,255,.3);
-  background:rgba(124,92,255,.045);
-}
-
-.feature-icon{
-  width:45px;
-  height:45px;
-  display:grid;
-  place-items:center;
-  border-radius:13px;
-  background:rgba(124,92,255,.11);
-  margin-bottom:18px;
-  font-size:20px;
-}
-
-.feature h3{
-  margin:0 0 8px;
-}
-
-.feature p{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.7;
-  margin:0;
-}
-
-/* HOW IT WORKS */
-
-.workflow{
-  padding:40px 0 100px;
-}
-
-.steps{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-}
-
-.step{
-  position:relative;
-  padding:27px;
-  border:1px solid var(--border);
-  border-radius:18px;
-  background:rgba(255,255,255,.025);
-}
-
-.step-number{
-  color:#9586ff;
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:2px;
-}
-
-.step h3{
-  margin:12px 0 8px;
-}
-
-.step p{
-  color:var(--muted);
-  line-height:1.7;
-  font-size:13px;
-}
-
-/* PRICING */
-
-.pricing{
-  padding:30px 0 110px;
-}
-
-.prices{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:13px;
-}
-
-.price{
-  position:relative;
-  padding:25px;
-  border-radius:20px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.025);
-}
-
-.price.featured{
-  border-color:rgba(124,92,255,.55);
-  background:linear-gradient(150deg,rgba(124,92,255,.13),rgba(255,255,255,.025));
-  box-shadow:0 20px 70px rgba(124,92,255,.1);
-}
-
-.popular{
-  position:absolute;
-  top:14px;
-  right:14px;
-  font-size:9px;
-  padding:5px 8px;
-  border-radius:999px;
-  background:var(--accent);
-  font-weight:800;
-}
-
-.price h3{
-  margin:0;
-}
-
-.price strong{
-  display:block;
-  font-size:35px;
-  margin:14px 0 5px;
-}
-
-.price p{
-  color:var(--muted);
-  font-size:12px;
-  min-height:35px;
-  line-height:1.5;
-}
-
-.price ul{
-  list-style:none;
-  padding:0;
-  margin:20px 0;
-  color:#bac5dc;
-  font-size:12px;
-  line-height:2;
-}
-
-.price li:before{
-  content:"✓";
-  color:var(--success);
-  margin-right:7px;
-}
-
-.price button{
-  width:100%;
-  margin:0;
-  padding:12px;
-  border-radius:10px;
-  background:rgba(255,255,255,.07);
-  border:1px solid var(--border);
-  color:white;
-  font-weight:750;
-}
-
-.price.featured button{
-  background:linear-gradient(135deg,var(--accent),#5f82ff);
-  border:0;
-}
-
-/* CTA */
-
-.cta{
-  padding:70px 25px;
-  text-align:center;
-  border:1px solid rgba(124,92,255,.22);
-  border-radius:26px;
-  background:
-    radial-gradient(circle at 50% 0%,rgba(124,92,255,.2),transparent 55%),
-    rgba(255,255,255,.025);
-}
-
-.cta h2{
-  font-size:clamp(30px,5vw,48px);
-  letter-spacing:-2px;
-  margin:0 0 12px;
-}
-
-.cta p{
-  color:var(--muted);
-  max-width:560px;
-  margin:0 auto 25px;
-}
-
-/* FOOTER */
-
-footer{
-  margin-top:70px;
-  border-top:1px solid var(--border);
-  padding:35px 0;
-  color:#667493;
-  font-size:11px;
-}
-
-.footer-inner{
-  display:flex;
-  justify-content:space-between;
-  gap:20px;
-}
-
-/* AUTH */
-
-#authModal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:1000;
-  background:rgba(0,0,0,.78);
-  backdrop-filter:blur(10px);
-  padding:18px;
-  align-items:center;
-  justify-content:center;
-}
-
-.auth-box{
-  width:100%;
-  max-width:430px;
-  border:1px solid rgba(255,255,255,.11);
-  background:linear-gradient(145deg,#121b37,#080d1e);
-  border-radius:24px;
-  padding:28px;
-  box-shadow:0 30px 100px rgba(0,0,0,.55);
-}
-
-.auth-logo{
-  width:48px;
-  height:48px;
-  display:grid;
-  place-items:center;
-  border-radius:15px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  margin-bottom:18px;
-}
-
-.auth-box h2{
-  margin:0 0 7px;
-}
-
-.auth-box .desc{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.6;
-  margin-bottom:20px;
-}
-
-.auth-actions{
-  display:flex;
-  gap:9px;
-}
-
-.auth-actions button{
-  flex:1;
-}
-
-.auth-primary{
-  background:linear-gradient(135deg,var(--accent),#5f82ff);
-  color:white;
-  border:0;
-}
-
-.auth-secondary{
-  background:rgba(255,255,255,.05);
-  color:white;
-  border:1px solid var(--border);
-}
-
-.auth-message{
-  min-height:20px;
-  color:var(--muted);
-  font-size:12px;
-  text-align:center;
-  margin-top:13px;
-}
-
-.close-auth{
-  background:transparent;
-  border:0;
-  color:#687697;
-  font-size:12px;
-  margin-top:10px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:900px){
-  .nav-links{
-    display:none;
-  }
-
-  .generator{
-    grid-template-columns:1fr;
-  }
-
-  .prices{
-    grid-template-columns:1fr 1fr;
-  }
-}
-
-@media(max-width:650px){
-  .container{
-    width:min(100% - 24px,1120px);
-  }
-
-  .nav-inner{
-    height:68px;
-  }
-
-  .logo{
-    font-size:18px;
-  }
-
-  .logo-mark{
-    width:33px;
-    height:33px;
-  }
-
-  .nav-actions .nav-btn.primary{
-    display:none;
-  }
-
-  .hero{
-    padding:70px 0 55px;
-  }
-
-  .hero h1{
-    font-size:47px;
-    letter-spacing:-2.5px;
-  }
-
-  .hero p{
-    font-size:15px;
-  }
-
-  .stats,
-  .feature-grid,
-  .steps,
-  .prices{
-    grid-template-columns:1fr;
-  }
-
-  .features{
-    padding:80px 0 60px;
-  }
-
-  .workflow{
-    padding-bottom:70px;
-  }
-
-  .pricing{
-    padding-bottom:75px;
-  }
-
-  .footer-inner{
-    flex-direction:column;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#05060a" />
+  <meta name="color-scheme" content="dark" />
+  <title>GrowthOS — AI Marketing Engine</title>
+  <meta name="description" content="GrowthOS turns a business offer into ready-to-use marketing campaigns with AI." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#05060a;
+      --bg2:#090b12;
+      --panel:rgba(15,18,29,.68);
+      --panel-strong:rgba(18,21,34,.88);
+      --line:rgba(255,255,255,.09);
+      --line-strong:rgba(255,255,255,.15);
+      --text:#f7f8fb;
+      --muted:#9da4b5;
+      --soft:#cbd0dc;
+      --violet:#8b5cf6;
+      --cyan:#22d3ee;
+      --pink:#ec4899;
+      --green:#34d399;
+      --danger:#fb7185;
+      --radius:24px;
+      --shadow:0 30px 90px rgba(0,0,0,.42);
+      --max:1180px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(139,92,246,.16), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(34,211,238,.10), transparent 26%),
+        radial-gradient(circle at 50% 72%, rgba(236,72,153,.07), transparent 30%),
+        var(--bg);
+      color:var(--text);
+      font-family:"DM Sans",sans-serif;
+      overflow-x:hidden;
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.32;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size:48px 48px;
+      mask-image:linear-gradient(to bottom, black, transparent 75%);
+      z-index:-3;
+    }
+
+    body:after{
+      content:"";
+      position:fixed;
+      width:520px;
+      height:520px;
+      border-radius:50%;
+      left:-180px;
+      top:20%;
+      background:rgba(139,92,246,.10);
+      filter:blur(100px);
+      pointer-events:none;
+      z-index:-2;
+    }
+
+    a{color:inherit;text-decoration:none}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    ::selection{background:rgba(139,92,246,.35);color:white}
+
+    .container{
+      width:min(var(--max),calc(100% - 40px));
+      margin:auto;
+    }
+
+    /* NAV */
+    .nav-wrap{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:50;
+      padding:16px 0;
+    }
+
+    nav{
+      width:min(1100px,calc(100% - 28px));
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      padding:10px 12px 10px 18px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(6,7,12,.72);
+      backdrop-filter:blur(22px);
+      box-shadow:0 14px 50px rgba(0,0,0,.28);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-family:"Space Grotesk",sans-serif;
+      font-weight:700;
+      letter-spacing:-.03em;
+      white-space:nowrap;
+    }
+
+    .brand-mark{
+      width:34px;
+      height:34px;
+      border-radius:11px;
+      display:grid;
+      place-items:center;
+      background:
+        linear-gradient(135deg,rgba(139,92,246,.95),rgba(34,211,238,.85));
+      box-shadow:
+        0 0 28px rgba(139,92,246,.35),
+        inset 0 1px 1px rgba(255,255,255,.4);
+      transform:rotate(-8deg);
+    }
+
+    .brand-mark span{
+      width:14px;
+      height:14px;
+      border:2px solid white;
+      border-radius:4px;
+      transform:rotate(8deg);
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .nav-links a,.nav-link-btn{
+      border:0;
+      background:transparent;
+      color:#aeb5c5;
+      padding:9px 11px;
+      border-radius:10px;
+      font-size:13px;
+      transition:.2s ease;
+    }
+
+    .nav-links a:hover,.nav-link-btn:hover{
+      color:white;
+      background:rgba(255,255,255,.06);
+    }
+
+    .nav-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn{
+      border:1px solid var(--line-strong);
+      color:white;
+      background:rgba(255,255,255,.045);
+      padding:11px 16px;
+      border-radius:12px;
+      font-weight:600;
+      font-size:13px;
+      transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.08)}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    .btn-primary{
+      border-color:transparent;
+      background:linear-gradient(135deg,#8b5cf6,#6d4bf5 52%,#22d3ee);
+      box-shadow:0 10px 35px rgba(116,78,246,.3);
+    }
+
+    .btn-primary:hover{
+      box-shadow:0 16px 44px rgba(116,78,246,.42);
+      filter:saturate(1.1);
+    }
+
+    .btn-small{padding:9px 12px;font-size:12px}
+
+    /* HERO */
+    .hero{
+      min-height:900px;
+      padding:170px 0 90px;
+      position:relative;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-orb{
+      position:absolute;
+      border-radius:50%;
+      filter:blur(1px);
+      pointer-events:none;
+      transform-style:preserve-3d;
+    }
+
+    .orb-a{
+      width:430px;height:430px;
+      right:4%;top:15%;
+      background:radial-gradient(circle at 35% 30%,rgba(34,211,238,.25),rgba(139,92,246,.07) 48%,transparent 70%);
+      animation:floatA 8s ease-in-out infinite;
+    }
+
+    .orb-b{
+      width:280px;height:280px;
+      left:5%;bottom:9%;
+      background:radial-gradient(circle,rgba(236,72,153,.13),transparent 68%);
+      animation:floatB 10s ease-in-out infinite;
+    }
+
+    @keyframes floatA{50%{transform:translate3d(-18px,22px,0) scale(1.04)}}
+    @keyframes floatB{50%{transform:translate3d(18px,-18px,0) scale(.96)}}
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.02fr .98fr;
+      gap:55px;
+      align-items:center;
+      position:relative;
+      z-index:1;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(139,92,246,.28);
+      background:rgba(139,92,246,.08);
+      padding:7px 11px;
+      border-radius:999px;
+      color:#d7caff;
+      font-size:12px;
+      font-weight:600;
+      margin-bottom:22px;
+    }
+
+    .live-dot{
+      width:7px;height:7px;border-radius:50%;
+      background:#34d399;
+      box-shadow:0 0 12px rgba(52,211,153,.8);
+    }
+
+    h1,h2,h3{
+      font-family:"Space Grotesk",sans-serif;
+      margin:0;
+      letter-spacing:-.045em;
+    }
+
+    h1{
+      font-size:clamp(52px,7vw,88px);
+      line-height:.95;
+      max-width:850px;
+    }
+
+    .gradient-text{
+      background:linear-gradient(110deg,#fff 15%,#c8b5ff 48%,#67e8f9 85%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .hero-copy{
+      color:#aeb5c5;
+      max-width:620px;
+      font-size:18px;
+      line-height:1.65;
+      margin:26px 0 30px;
+    }
+
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+    .trust-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:28px;
+      color:#7f8799;
+      font-size:12px;
+    }
+
+    .avatar-stack{display:flex}
+    .avatar{
+      width:26px;height:26px;border-radius:50%;
+      border:2px solid #07080d;
+      margin-left:-7px;
+      background:linear-gradient(135deg,#a78bfa,#22d3ee);
+    }
+    .avatar:first-child{margin-left:0}
+
+    /* 3D PRODUCT PREVIEW */
+    .hero-visual{
+      perspective:1200px;
+      position:relative;
+    }
+
+    .product-stage{
+      position:relative;
+      transform:rotateY(-8deg) rotateX(4deg) rotateZ(.5deg);
+      transform-style:preserve-3d;
+      transition:transform .6s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .product-stage:hover{
+      transform:rotateY(-3deg) rotateX(2deg) translateY(-6px);
+    }
+
+    .dashboard-card{
+      position:relative;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:26px;
+      background:
+        linear-gradient(145deg,rgba(28,31,48,.93),rgba(10,12,19,.93));
+      box-shadow:
+        0 55px 100px rgba(0,0,0,.48),
+        0 20px 45px rgba(139,92,246,.10),
+        inset 0 1px 0 rgba(255,255,255,.09);
+      padding:16px;
+      overflow:hidden;
+    }
+
+    .dashboard-card:before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:conic-gradient(from 0deg,transparent,rgba(139,92,246,.12),transparent,rgba(34,211,238,.10),transparent);
+      animation:spin 13s linear infinite;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .dash-inner{position:relative;z-index:1}
+
+    .window-bar{
+      display:flex;align-items:center;gap:6px;
+      padding:4px 4px 13px;
+      border-bottom:1px solid var(--line);
+    }
+    .window-dot{width:8px;height:8px;border-radius:50%;background:#525969}
+    .window-title{margin-left:auto;margin-right:auto;color:#72798a;font-size:10px}
+
+    .dash-content{
+      display:grid;
+      grid-template-columns:110px 1fr;
+      min-height:430px;
+    }
+
+    .side{
+      border-right:1px solid var(--line);
+      padding:16px 9px 0 4px;
+    }
+
+    .side-logo{
+      height:28px;
+      border-radius:9px;
+      background:rgba(255,255,255,.06);
+      margin-bottom:18px;
+    }
+
+    .side-line{
+      height:8px;border-radius:99px;
+      background:rgba(255,255,255,.055);
+      margin:10px 4px;
+    }
+
+    .side-line.active{
+      background:linear-gradient(90deg,rgba(139,92,246,.75),rgba(34,211,238,.3));
+    }
+
+    .dash-main{padding:18px 18px 8px}
+
+    .mini-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:15px;
+    }
+
+    .mini-title strong{font-size:14px}
+    .mini-pill{
+      width:55px;height:20px;border-radius:99px;
+      background:rgba(255,255,255,.06);
+    }
+
+    .ai-panel{
+      border:1px solid rgba(139,92,246,.25);
+      border-radius:18px;
+      padding:15px;
+      background:
+        radial-gradient(circle at 90% 0%,rgba(34,211,238,.10),transparent 40%),
+        rgba(139,92,246,.06);
+      box-shadow:inset 0 1px rgba(255,255,255,.05);
+    }
+
+    .ai-top{display:flex;justify-content:space-between;align-items:center}
+    .ai-label{font-size:10px;color:#a99af8;letter-spacing:.08em;text-transform:uppercase}
+    .ai-status{font-size:9px;color:#61e6b4}
+
+    .ai-line{
+      height:9px;border-radius:99px;
+      background:rgba(255,255,255,.09);
+      margin-top:14px;
+    }
+    .ai-line.w70{width:70%}
+    .ai-line.w92{width:92%}
+    .ai-line.w55{width:55%}
+
+    .metric-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px
+    }
+    .metric{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.035);
+      padding:11px;border-radius:14px;
+    }
+    .metric b{display:block;font-family:"Space Grotesk";font-size:17px}
+    .metric span{font-size:8px;color:#7e8799}
+
+    .chart{
+      height:105px;
+      margin-top:11px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+      background-size:28px 28px;
+    }
+
+    .chart svg{position:absolute;inset:0;width:100%;height:100%}
+
+    .floating-card{
+      position:absolute;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(12,14,22,.88);
+      backdrop-filter:blur(18px);
+      box-shadow:0 25px 55px rgba(0,0,0,.38);
+      border-radius:17px;
+      padding:13px;
+      z-index:3;
+    }
+
+    .float-one{left:-40px;bottom:45px;width:155px;animation:floatB 7s ease-in-out infinite}
+    .float-two{right:-30px;top:45px;width:150px;animation:floatA 7.5s ease-in-out infinite}
+
+    .float-label{font-size:9px;color:#8f97a8}
+    .float-value{font-family:"Space Grotesk";font-size:22px;margin-top:5px}
+    .up{font-size:9px;color:#61e6b4;margin-left:5px}
+
+    /* GENERATOR */
+    section{scroll-margin-top:100px}
+    .section{padding:110px 0}
+
+    .section-head{
+      max-width:720px;
+      margin-bottom:35px;
+    }
+
+    .kicker{
+      color:#9e8cf5;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .section h2{font-size:clamp(34px,5vw,58px);line-height:1}
+    .section-lead{color:#8f97a8;line-height:1.7;margin:15px 0 0;max-width:620px}
+
+    .generator-shell{
+      display:grid;
+      grid-template-columns:390px 1fr;
+      gap:14px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:30px;
+      background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .generator-shell:before{
+      content:"";
+      position:absolute;
+      width:450px;height:450px;
+      right:-200px;top:-220px;
+      background:rgba(139,92,246,.14);
+      filter:blur(90px);
+      pointer-events:none;
+    }
+
+    .form-panel,.output-panel{
+      position:relative;
+      z-index:1;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:rgba(8,10,17,.72);
+    }
+
+    .form-panel{padding:22px}
+    .panel-title{font-family:"Space Grotesk";font-size:18px;font-weight:600}
+    .panel-sub{font-size:12px;color:#7f8798;line-height:1.6;margin:7px 0 20px}
+
+    .field{margin-bottom:13px}
+    .field label{
+      display:block;
+      color:#c7ccda;
+      font-size:11px;
+      font-weight:600;
+      margin-bottom:7px;
+    }
+
+    .field input{
+      width:100%;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.035);
+      color:white;
+      padding:13px 13px;
+      border-radius:12px;
+      outline:none;
+      font-size:14px;
+      transition:.2s;
+    }
+
+    .field input::placeholder{color:#626a7b}
+    .field input:focus{
+      border-color:rgba(139,92,246,.65);
+      box-shadow:0 0 0 4px rgba(139,92,246,.10);
+    }
+
+    .generate-btn{width:100%;margin-top:5px;padding:14px}
+    .status{
+      min-height:18px;
+      color:#81899a;
+      font-size:11px;
+      line-height:1.5;
+      margin-top:11px;
+    }
+
+    .output-panel{padding:22px;min-height:520px}
+    .output-header{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:flex-start;
+      padding-bottom:15px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .output-title{font-family:"Space Grotesk";font-size:18px}
+    .output-meta{font-size:11px;color:#6f7788;margin-top:5px}
+
+    .empty{
+      min-height:430px;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      padding:40px;
+    }
+
+    .empty-icon{
+      width:72px;height:72px;
+      margin:auto auto 16px;
+      display:grid;place-items:center;
+      border:1px solid rgba(139,92,246,.28);
+      border-radius:22px;
+      background:rgba(139,92,246,.08);
+      box-shadow:0 20px 50px rgba(139,92,246,.13);
+      font-size:26px;
+    }
+
+    .empty h3{font-size:20px}
+    .empty p{color:#737c8e;font-size:13px;line-height:1.6;max-width:360px}
+
+    .output-section{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.025);
+      border-radius:16px;
+      padding:15px;
+      margin-top:12px;
+    }
+
+    .output-section h3{font-size:13px;letter-spacing:-.02em}
+    .out{
+      color:#aeb5c5;
+      white-space:pre-wrap;
+      line-height:1.7;
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .copy-btn{
+      margin-top:11px;
+      border:1px solid var(--line);
+      color:#b9c0cf;
+      background:rgba(255,255,255,.035);
+      padding:7px 10px;
+      border-radius:9px;
+      font-size:10px;
+    }
+
+    .copy-btn:hover{background:rgba(255,255,255,.08);color:white}
+
+    /* BENTO */
+    .bento{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:14px;
+    }
+
+    .bento-card{
+      min-height:230px;
+      grid-column:span 4;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      background:
+        linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+      position:relative;
+      overflow:hidden;
+      transition:transform .3s ease,border-color .3s ease;
+    }
+
+    .bento-card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(139,92,246,.3);
+    }
+
+    .bento-card.large{grid-column:span 8}
+    .bento-card.wide{grid-column:span 6}
+
+    .feature-icon{
+      width:42px;height:42px;
+      border-radius:13px;
+      display:grid;place-items:center;
+      background:rgba(139,92,246,.10);
+      border:1px solid rgba(139,92,246,.18);
+      margin-bottom:25px;
+      font-size:18px;
+    }
+
+    .bento-card h3{font-size:22px}
+    .bento-card p{color:#80899b;line-height:1.65;font-size:13px;max-width:450px}
+
+    .mini-ui{
+      position:absolute;
+      right:-18px;bottom:-30px;
+      width:55%;
+      height:145px;
+      border:1px solid var(--line);
+      border-radius:18px 0 0 0;
+      background:rgba(7,9,15,.78);
+      transform:rotate(-5deg);
+      padding:14px;
+      box-shadow:0 25px 50px rgba(0,0,0,.3);
+    }
+
+    .mini-ui-line{height:7px;border-radius:99px;background:rgba(255,255,255,.08);margin:9px 0}
+    .mini-ui-line.short{width:55%}
+
+    /* DASHBOARD */
+    .dashboard-shell{
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:14px;
+      background:rgba(255,255,255,.025);
+      box-shadow:var(--shadow);
+    }
+
+    .dashboard-top{
+      display:flex;justify-content:space-between;align-items:center;gap:15px;
+      padding:15px 17px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(8,10,16,.7);
+    }
+
+    .dashboard-top h3{font-size:19px}
+    .dashboard-count{font-size:11px;color:#7e8798;margin-top:4px}
+
+    .campaign-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .campaign-card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(8,10,16,.72);
+      padding:16px;
+      transition:.2s;
+    }
+
+    .campaign-card:hover{
+      border-color:rgba(139,92,246,.28);
+      transform:translateY(-3px);
+    }
+
+    .campaign-type{
+      display:inline-flex;
+      padding:5px 8px;
+      border-radius:99px;
+      font-size:9px;
+      color:#c9bbff;
+      background:rgba(139,92,246,.10);
+      border:1px solid rgba(139,92,246,.16);
+    }
+
+    .campaign-card h4{font-family:"Space Grotesk";font-size:16px;margin:13px 0 5px}
+    .campaign-card p{color:#7f8798;font-size:11px;line-height:1.5;min-height:34px}
+    .campaign-date{font-size:9px;color:#626a79;margin:12px 0}
+    .campaign-actions{display:flex;gap:7px}
+
+    .empty-dashboard{
+      text-align:center;
+      padding:55px 20px;
+      color:#737c8e;
+      font-size:13px;
+    }
+
+    /* PRICING */
+    .pricing{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .price-card{
+      border:1px solid var(--line);
+      border-radius:23px;
+      padding:23px;
+      background:rgba(255,255,255,.025);
+      position:relative;
+    }
+
+    .price-card.featured{
+      border-color:rgba(139,92,246,.48);
+      background:
+        radial-gradient(circle at 90% 0%,rgba(139,92,246,.13),transparent 45%),
+        rgba(255,255,255,.035);
+      box-shadow:0 25px 65px rgba(91,61,184,.14);
+    }
+
+    .popular{
+      position:absolute;
+      top:14px;right:14px;
+      font-size:8px;
+      padding:5px 7px;
+      border-radius:99px;
+      background:rgba(139,92,246,.15);
+      color:#c9bbff;
+      border:1px solid rgba(139,92,246,.2);
+    }
+
+    .price-card h3{font-size:19px}
+    .price{font-family:"Space Grotesk";font-size:39px;margin:18px 0 5px}
+    .price small{font-family:"DM Sans";font-size:11px;color:#777f90}
+    .price-desc{color:#7f8798;font-size:11px;line-height:1.6;min-height:38px}
+    .price-list{list-style:none;padding:0;margin:20px 0}
+    .price-list li{font-size:11px;color:#a4abb9;padding:7px 0}
+    .price-list li:before{content:"✓";color:#61e6b4;margin-right:8px}
+    .price-card .btn{width:100%}
+
+    /* FOOTER */
+    footer{
+      padding:50px 0 35px;
+      border-top:1px solid var(--line);
+      margin-top:30px;
+    }
+
+    .footer-row{
+      display:flex;justify-content:space-between;gap:20px;align-items:center;
+      color:#6f7788;font-size:11px;
+    }
+
+    /* MODALS */
+    .modal{
+      position:fixed;
+      inset:0;
+      z-index:100;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(0,0,0,.72);
+      backdrop-filter:blur(16px);
+    }
+
+    .modal-card{
+      width:min(440px,100%);
+      border:1px solid var(--line-strong);
+      border-radius:24px;
+      padding:25px;
+      background:
+        radial-gradient(circle at 90% 0%,rgba(139,92,246,.12),transparent 40%),
+        rgba(10,12,20,.96);
+      box-shadow:0 40px 120px rgba(0,0,0,.6);
+    }
+
+    .modal-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+    .modal-head h3{font-size:24px}
+    .modal-head p{color:#737c8e;font-size:12px;line-height:1.5;margin:7px 0 0}
+
+    .close{
+      width:34px;height:34px;border-radius:10px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#aeb5c5;
+    }
+
+    .modal .field{margin-top:18px}
+    .modal .btn{width:100%;margin-top:5px}
+
+    .auth-switch{
+      border:0;background:none;color:#a99af8;
+      display:block;margin:15px auto 0;
+      font-size:11px;
+    }
+
+    .forgot{
+      border:0;background:none;color:#8f97a8;
+      display:block;margin:9px auto 0;
+      font-size:11px;
+    }
+
+    .forgot:hover,.auth-switch:hover{color:white}
+
+    .message{
+      min-height:18px;
+      text-align:center;
+      color:#9da4b5;
+      font-size:11px;
+      line-height:1.5;
+      margin-top:12px;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:980px){
+      .nav-links{display:none}
+      .hero{padding-top:140px;min-height:auto}
+      .hero-grid{grid-template-columns:1fr;gap:45px}
+      .hero-visual{max-width:720px;margin:auto;width:100%}
+      .generator-shell{grid-template-columns:1fr}
+      .campaign-grid{grid-template-columns:repeat(2,1fr)}
+      .pricing{grid-template-columns:repeat(2,1fr)}
+      .bento-card,.bento-card.large,.bento-card.wide{grid-column:span 6}
+    }
+
+    @media(max-width:620px){
+      .container{width:min(var(--max),calc(100% - 24px))}
+      nav{width:calc(100% - 14px);padding-left:12px}
+      .nav-actions .btn-small{display:none}
+      h1{font-size:52px}
+      .hero-copy{font-size:15px}
+      .float-one{left:-8px}
+      .float-two{right:-5px}
+      .dash-content{grid-template-columns:1fr}
+      .side{display:none}
+      .campaign-grid,.pricing{grid-template-columns:1fr}
+      .bento-card,.bento-card.large,.bento-card.wide{grid-column:span 12}
+      .section{padding:80px 0}
+      .footer-row{flex-direction:column;align-items:flex-start}
+      .generator-shell{padding:8px}
+      .form-panel,.output-panel{padding:16px}
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- NAVIGATION -->
-<nav class="nav">
-<div class="container nav-inner">
-
-<a class="logo" href="#">
-<span class="logo-mark">✦</span>
-<span>GrowthOS</span>
-</a>
-
-<div class="nav-links">
-<a href="#generator">AI Generator</a>
-<a href="#features">Features</a>
-<a href="#workflow">How it works</a>
-<a href="#pricing">Pricing</a>
-</div>
-
-<div class="nav-actions">
-<button id="loginBtn" class="nav-btn">Login</button>
-<button id="logoutBtn" class="nav-btn primary" style="display:none">Logout</button>
-<button class="nav-btn primary" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">
-Get Started
-</button>
-</div>
-
-</div>
-</nav>
-
-
-<main>
-
-<!-- HERO -->
-<section class="hero">
-<div class="container">
-
-<div class="badge">
-<span class="badge-dot"></span>
-AI-POWERED MARKETING ENGINE
-</div>
-
-<h1>
-Your marketing team.
-<br>
-<span class="gradient-text">Powered by AI.</span>
-</h1>
-
-<p>
-Turn one business idea into social posts, viral video hooks,
-customer offers and professional review replies in seconds.
-</p>
-
-<div class="hero-actions">
-<button class="hero-btn" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">
-Generate My Marketing Kit →
-</button>
-
-<button class="hero-btn secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
-Explore GrowthOS
-</button>
-</div>
-
-<div class="hero-note">
-No credit card required · Start free
-</div>
-
-</div>
-</section>
-
-
-<!-- STATS -->
-<section class="container">
-<div class="stats">
-
-<div class="stat">
-<strong>20+</strong>
-<span>Marketing assets generated</span>
-</div>
-
-<div class="stat">
-<strong>Seconds</strong>
-<span>Not hours to build campaigns</span>
-</div>
-
-<div class="stat">
-<strong>24/7</strong>
-<span>AI marketing assistance</span>
-</div>
-
-</div>
-</section>
-
-
-<!-- GENERATOR -->
-<section id="generator" class="container">
-
-<div class="section-heading">
-<div class="eyebrow">AI Marketing Engine</div>
-<h2>Build your marketing kit.</h2>
-<p>
-Tell GrowthOS about your business. Our engine turns your information
-into practical marketing assets ready to use.
-</p>
-</div>
-
-<div class="generator">
-
-<!-- INPUT -->
-<div class="card">
-
-<div class="card-header">
-<div>
-<div class="card-title">Business Intelligence</div>
-<div class="card-subtitle">Tell us about your business</div>
-</div>
-<div class="ai-badge">AI READY</div>
-</div>
-
-<label>Business type *</label>
-<input id="type" placeholder="Dentist, salon, realtor, gym...">
-
-<label>City / market</label>
-<input id="city" placeholder="Karachi">
-
-<label>Main product or service *</label>
-<textarea id="offer" placeholder="What do you sell?"></textarea>
-
-<label>Target customer</label>
-<input id="audience" placeholder="Families, homeowners, startups...">
-
-<button id="go" class="generate">
-Generate Marketing Kit ✦
-</button>
-
-<p id="status" class="status"></p>
-
-</div>
-
-
-<!-- OUTPUT -->
-<div class="card output-card">
-
-<div class="card-header">
-<div>
-<div class="card-title">AI Marketing Output</div>
-<div class="card-subtitle">Your generated campaign assets</div>
-</div>
-<div class="ai-badge">LIVE</div>
-</div>
-
-<div id="emptyState" class="empty-state">
-<div>
-<div class="empty-icon">✦</div>
-<h3>Your AI workspace is ready</h3>
-<p>
-Enter your business information and generate your first
-marketing campaign.
-</p>
-</div>
-</div>
-
-<div id="results" style="display:none">
-<div id="output"></div>
-</div>
-
-</div>
-
-</div>
-</section>
-
-
-<!-- FEATURES -->
-<section id="features" class="features">
-<div class="container">
-
-<div class="section-heading">
-<div class="eyebrow">One Engine. Everything You Need.</div>
-<h2>Marketing without the busywork.</h2>
-<p>
-GrowthOS gives small businesses the tools they need to stay visible,
-consistent and persuasive.
-</p>
-</div>
-
-<div class="feature-grid">
-
-<div class="feature">
-<div class="feature-icon">✦</div>
-<h3>AI Social Content</h3>
-<p>
-Generate ready-to-publish social posts tailored to your business,
-market and customers.
-</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">▶</div>
-<h3>Video Hooks</h3>
-<p>
-Create short-form video ideas designed to stop the scroll and
-start conversations.
-</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">◆</div>
-<h3>Smart Offers</h3>
-<p>
-Turn your services into simple, understandable promotions that
-customers can act on.
-</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">★</div>
-<h3>Review Replies</h3>
-<p>
-Respond to customer feedback professionally while protecting
-your brand voice.
-</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">↗</div>
-<h3>Growth Ideas</h3>
-<p>
-Discover practical marketing angles instead of staring at a blank
-content calendar.
-</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">∞</div>
-<h3>Built to Scale</h3>
-<p>
-Start with one business and eventually manage multiple brands,
-clients and campaigns.
-</p>
-</div>
-
-</div>
-</div>
-</section>
-
-
-<!-- WORKFLOW -->
-<section id="workflow" class="workflow">
-<div class="container">
-
-<div class="section-heading">
-<div class="eyebrow">Simple Process</div>
-<h2>From idea to campaign.</h2>
-<p>Three steps. No marketing degree required.</p>
-</div>
-
-<div class="steps">
-
-<div class="step">
-<div class="step-number">01 / INPUT</div>
-<h3>Tell us your business</h3>
-<p>
-Enter your industry, market, product and target customer.
-</p>
-</div>
-
-<div class="step">
-<div class="step-number">02 / GENERATE</div>
-<h3>Let AI do the work</h3>
-<p>
-GrowthOS analyzes your information and builds your marketing assets.
-</p>
-</div>
-
-<div class="step">
-<div class="step-number">03 / GROW</div>
-<h3>Publish and iterate</h3>
-<p>
-Use the content, test what works and continuously improve your marketing.
-</p>
-</div>
-
-</div>
-</div>
-</section>
-
-
-<!-- PRICING -->
-<section id="pricing" class="pricing">
-<div class="container">
-
-<div class="section-heading">
-<div class="eyebrow">Pricing</div>
-<h2>Start free. Scale when ready.</h2>
-<p>No complicated contracts. Choose the system that fits your growth.</p>
-</div>
-
-<div class="prices">
-
-<div class="price">
-<h3>Free</h3>
-<strong>$0</strong>
-<p>Explore GrowthOS.</p>
-<ul>
-<li>Starter AI generation</li>
-<li>Marketing ideas</li>
-<li>Basic campaign assets</li>
-</ul>
-<button onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">
-Start Free
-</button>
-</div>
-
-<div class="price">
-<h3>Starter</h3>
-<strong>$19</strong>
-<p>One-time marketing bundle.</p>
-<ul>
-<li>Complete marketing kit</li>
-<li>Social content</li>
-<li>Video hooks</li>
-<li>Offers & replies</li>
-</ul>
-<button onclick="alert('Payments will be connected during launch.')">
-Get Starter
-</button>
-</div>
-
-<div class="price featured">
-<div class="popular">MOST POPULAR</div>
-<h3>Pro</h3>
-<strong>$39<small>/mo</small></strong>
-<p>Continuous AI marketing.</p>
-<ul>
-<li>Monthly marketing system</li>
-<li>More generations</li>
-<li>Saved campaigns</li>
-<li>Priority features</li>
-</ul>
-<button onclick="alert('Payments will be connected during launch.')">
-Start Pro
-</button>
-</div>
-
-<div class="price">
-<h3>Agency</h3>
-<strong>$199<small>/mo</small></strong>
-<p>For multiple client brands.</p>
-<ul>
-<li>Multiple workspaces</li>
-<li>Client campaigns</li>
-<li>Agency workflow</li>
-<li>Scale your operation</li>
-</ul>
-<button onclick="alert('Payments will be connected during launch.')">
-Start Agency
-</button>
-</div>
-
-</div>
-</div>
-</section>
-
-
-<!-- CTA -->
-<section class="container">
-<div class="cta">
-
-<h2>Stop guessing what to post.</h2>
-
-<p>
-Give GrowthOS your business details and start building your
-marketing engine today.
-</p>
-
-<button class="hero-btn" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">
-Build My Marketing Kit →
-</button>
-
-</div>
-</section>
-
-</main>
-
-
-<!-- FOOTER -->
-<footer>
-<div class="container footer-inner">
-<div>© 2026 GrowthOS. AI Marketing Engine.</div>
-<div>Built for ambitious businesses.</div>
-</div>
-</footer>
-
-
-<!-- AUTH MODAL -->
-<div id="authModal">
-
-<div class="auth-box">
-
-<div class="auth-logo">✦</div>
-
-<h2 id="authTitle">Welcome to GrowthOS</h2>
-
-<p id="authSubtitle" class="desc">
-Login to save your marketing campaigns and access them later.
-</p>
-
-<label>Email</label>
-<input id="authEmail" type="email" placeholder="you@example.com">
-
-<label>Password</label>
-<input id="authPassword" type="password" placeholder="Minimum 8 characters">
-
-<div class="auth-actions">
-
-<button id="authSubmit" class="auth-primary">
-Login
-</button>
-
-<button id="authMode" class="auth-secondary">
-Create account
-</button>
-
-</div>
-
-<button id="closeAuth" class="close-auth">
-Close
-</button>
-
-<p id="authMessage" class="auth-message"></p>
-
-</div>
-</div>
-
-
-<!-- SUPABASE -->
-<script type="module">
-
-import { supabase } from "./supabase.js";
-
-window.growthosSupabase = supabase;
-
-const loginBtn=document.getElementById("loginBtn");
-const logoutBtn=document.getElementById("logoutBtn");
-
-const authModal=document.getElementById("authModal");
-const authTitle=document.getElementById("authTitle");
-const authSubtitle=document.getElementById("authSubtitle");
-const authSubmit=document.getElementById("authSubmit");
-const authMode=document.getElementById("authMode");
-const closeAuth=document.getElementById("closeAuth");
-const authEmail=document.getElementById("authEmail");
-const authPassword=document.getElementById("authPassword");
-const authMessage=document.getElementById("authMessage");
-
-let signupMode=false;
-
-function openAuth(){
-  authModal.style.display="flex";
-  authMessage.textContent="";
-}
-
-function closeAuthModal(){
-  authModal.style.display="none";
-}
-
-function updateAuthMode(){
-
-  if(signupMode){
-
-    authTitle.textContent="Create your GrowthOS account";
-    authSubtitle.textContent="Save campaigns and access your marketing workspace anywhere.";
-    authSubmit.textContent="Create Account";
-    authMode.textContent="Already have an account? Login";
-
-  }else{
-
-    authTitle.textContent="Welcome to GrowthOS";
-    authSubtitle.textContent="Login to save your marketing campaigns and access them later.";
-    authSubmit.textContent="Login";
-    authMode.textContent="Create account";
-
-  }
-
-}
-
-function updateAuthUI(session){
-
-  if(session){
-
-    loginBtn.style.display="none";
-    logoutBtn.style.display="block";
-
-  }else{
-
-    loginBtn.style.display="block";
-    logoutBtn.style.display="none";
-
-  }
-
-}
-
-loginBtn.onclick=openAuth;
-
-closeAuth.onclick=closeAuthModal;
-
-authMode.onclick=()=>{
-
-  signupMode=!signupMode;
-  updateAuthMode();
-  authMessage.textContent="";
-
-};
-
-authSubmit.onclick=async()=>{
-
-  const email=authEmail.value.trim();
-  const password=authPassword.value;
-
-  if(!email||!password){
-
-    authMessage.textContent="Please enter your email and password.";
-    return;
-
-  }
-
-  if(password.length<8){
-
-    authMessage.textContent="Password must be at least 8 characters.";
-    return;
-
-  }
-
-  authSubmit.disabled=true;
-
-  authMessage.textContent=
-    signupMode ? "Creating your account..." : "Logging in...";
-
-  try{
-
-    if(signupMode){
-
-      const {data,error}=await supabase.auth.signUp({
-        email,
-        password
-      });
-
-      if(error) throw error;
-
-      if(data.session){
-
-        closeAuthModal();
-
-      }else{
-
-        authMessage.textContent=
-          "Account created. Please check your email to confirm your account.";
-
-      }
-
-    }else{
-
-      const {error}=await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if(error) throw error;
-
-      closeAuthModal();
-
+  <div class="nav-wrap">
+    <nav>
+      <a href="#" class="brand" aria-label="GrowthOS home">
+        <span class="brand-mark"><span></span></span>
+        GrowthOS
+      </a>
+
+      <div class="nav-links">
+        <a href="#generator">AI Generator</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">How it works</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+
+      <div class="nav-actions">
+        <button id="dashboardBtn" class="nav-link-btn" style="display:none">My Campaigns</button>
+        <button id="loginBtn" class="btn btn-small">Login</button>
+        <button id="logoutBtn" class="btn btn-small" style="display:none">Logout</button>
+        <a href="#generator" class="btn btn-primary btn-small">Get Started</a>
+      </div>
+    </nav>
+  </div>
+
+  <main>
+
+    <section class="hero">
+      <div class="hero-orb orb-a"></div>
+      <div class="hero-orb orb-b"></div>
+
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="live-dot"></span> AI marketing engine for small businesses</div>
+
+          <h1>
+            Turn one offer into
+            <span class="gradient-text">an entire campaign.</span>
+          </h1>
+
+          <p class="hero-copy">
+            GrowthOS turns your business, market and offer into ready-to-use social posts,
+            reel hooks, promotions and customer responses — in seconds.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#generator" class="btn btn-primary">Create my first campaign →</a>
+            <a href="#features" class="btn">Explore GrowthOS</a>
+          </div>
+
+          <div class="trust-row">
+            <div class="avatar-stack">
+              <span class="avatar"></span>
+              <span class="avatar"></span>
+              <span class="avatar"></span>
+            </div>
+            Built for founders, creators and local businesses
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="product-stage">
+            <div class="dashboard-card">
+              <div class="dash-inner">
+                <div class="window-bar">
+                  <span class="window-dot"></span>
+                  <span class="window-dot"></span>
+                  <span class="window-dot"></span>
+                  <span class="window-title">growthos / campaign workspace</span>
+                </div>
+
+                <div class="dash-content">
+                  <aside class="side">
+                    <div class="side-logo"></div>
+                    <div class="side-line active"></div>
+                    <div class="side-line"></div>
+                    <div class="side-line"></div>
+                    <div class="side-line"></div>
+                    <div class="side-line"></div>
+                  </aside>
+
+                  <div class="dash-main">
+                    <div class="mini-title">
+                      <strong>Marketing Overview</strong>
+                      <span class="mini-pill"></span>
+                    </div>
+
+                    <div class="ai-panel">
+                      <div class="ai-top">
+                        <span class="ai-label">GrowthOS AI</span>
+                        <span class="ai-status">● Generating</span>
+                      </div>
+                      <div class="ai-line w92"></div>
+                      <div class="ai-line w70"></div>
+                      <div class="ai-line w55"></div>
+                    </div>
+
+                    <div class="metric-grid">
+                      <div class="metric"><b>24</b><span>Content ideas</span></div>
+                      <div class="metric"><b>12</b><span>Offers</span></div>
+                      <div class="metric"><b>4.8x</b><span>Workflow</span></div>
+                    </div>
+
+                    <div class="chart">
+                      <svg viewBox="0 0 500 120" preserveAspectRatio="none" aria-hidden="true">
+                        <path d="M0 100 C70 95 80 82 135 88 S220 55 270 67 S340 35 390 49 S450 12 500 22"
+                              fill="none" stroke="rgba(139,92,246,.9)" stroke-width="3"/>
+                        <path d="M0 110 C70 105 80 94 135 100 S220 70 270 80 S340 52 390 61 S450 30 500 38"
+                              fill="none" stroke="rgba(34,211,238,.38)" stroke-width="2"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="floating-card float-one">
+              <div class="float-label">Campaign output</div>
+              <div class="float-value">+18 assets <span class="up">ready</span></div>
+            </div>
+
+            <div class="floating-card float-two">
+              <div class="float-label">AI status</div>
+              <div class="float-value">98% <span class="up">complete</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="generator" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">01 / AI Generator</div>
+          <h2>Your campaign starts with four answers.</h2>
+          <p class="section-lead">
+            No complicated marketing brief. Tell GrowthOS what you sell, where you sell it,
+            and who you want to reach.
+          </p>
+        </div>
+
+        <div class="generator-shell">
+          <div class="form-panel">
+            <div class="panel-title">Campaign brief</div>
+            <div class="panel-sub">Required fields are marked by the workflow itself. Keep answers specific for better output.</div>
+
+            <div class="field">
+              <label for="type">Business type</label>
+              <input id="type" placeholder="e.g. Restaurant, Salon, Agency" />
+            </div>
+
+            <div class="field">
+              <label for="city">City / market</label>
+              <input id="city" placeholder="e.g. Karachi" />
+            </div>
+
+            <div class="field">
+              <label for="offer">Main offer</label>
+              <input id="offer" placeholder="e.g. Family dinner deal" />
+            </div>
+
+            <div class="field">
+              <label for="audience">Target customer</label>
+              <input id="audience" placeholder="e.g. Families and young professionals" />
+            </div>
+
+            <button id="go" class="btn btn-primary generate-btn">Generate campaign ✦</button>
+            <div id="status" class="status"></div>
+          </div>
+
+          <div class="output-panel" id="results">
+            <div class="output-header">
+              <div>
+                <div class="output-title">Campaign workspace</div>
+                <div class="output-meta">Your AI-generated assets appear here.</div>
+              </div>
+              <span class="campaign-type">LIVE AI</span>
+            </div>
+
+            <div id="emptyState" class="empty">
+              <div>
+                <div class="empty-icon">✦</div>
+                <h3>Nothing generated yet.</h3>
+                <p>
+                  Complete the brief on the left and GrowthOS will build your campaign.
+                  You can then copy each asset individually.
+                </p>
+              </div>
+            </div>
+
+            <div id="output" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard" class="section" style="display:none">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">02 / Workspace</div>
+          <h2>Your saved campaigns.</h2>
+          <p class="section-lead">Every saved campaign stays inside your account so you can reopen or delete it later.</p>
+        </div>
+
+        <div class="dashboard-shell">
+          <div class="dashboard-top">
+            <div>
+              <h3>My Campaigns</h3>
+              <div id="campaignCount" class="dashboard-count">Loading...</div>
+            </div>
+            <button id="refreshCampaigns" class="btn btn-small">Refresh</button>
+          </div>
+
+          <div id="campaignList" class="campaign-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">03 / Product</div>
+          <h2>Simple on the surface. Powerful underneath.</h2>
+          <p class="section-lead">
+            The interface stays focused on the job-to-be-done while the system handles the repetitive marketing work.
+          </p>
+        </div>
+
+        <div class="bento">
+          <article class="bento-card large">
+            <div class="feature-icon">✦</div>
+            <h3>One brief → multiple marketing assets.</h3>
+            <p>
+              Stop starting from a blank page. GrowthOS turns a single offer into a practical
+              content package that can be used across social media and customer communication.
+            </p>
+            <div class="mini-ui">
+              <div class="mini-ui-line short"></div>
+              <div class="mini-ui-line"></div>
+              <div class="mini-ui-line"></div>
+              <div class="mini-ui-line short"></div>
+            </div>
+          </article>
+
+          <article class="bento-card">
+            <div class="feature-icon">◎</div>
+            <h3>Local context</h3>
+            <p>Give the AI your city or market so the campaign brief has a useful commercial context.</p>
+          </article>
+
+          <article class="bento-card">
+            <div class="feature-icon">⌁</div>
+            <h3>Copy-ready output</h3>
+            <p>Each generated section has its own copy action. Less editing, less friction.</p>
+          </article>
+
+          <article class="bento-card wide">
+            <div class="feature-icon">◈</div>
+            <h3>Saved campaign workspace</h3>
+            <p>Login once and keep your generated campaigns in one place. Open a previous result whenever you need it.</p>
+          </article>
+
+          <article class="bento-card wide">
+            <div class="feature-icon">↗</div>
+            <h3>Built to grow into a real SaaS</h3>
+            <p>Authentication, database storage and AI generation are already separated so the product can evolve into plans, usage limits and a larger dashboard.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">04 / Workflow</div>
+          <h2>From idea to campaign in three moves.</h2>
+        </div>
+
+        <div class="bento">
+          <article class="bento-card">
+            <div class="feature-icon">01</div>
+            <h3>Describe</h3>
+            <p>Enter your business, market, offer and target customer.</p>
+          </article>
+
+          <article class="bento-card">
+            <div class="feature-icon">02</div>
+            <h3>Generate</h3>
+            <p>GrowthOS sends the brief to the AI engine and structures the response into useful assets.</p>
+          </article>
+
+          <article class="bento-card">
+            <div class="feature-icon">03</div>
+            <h3>Use</h3>
+            <p>Copy what you need, save the campaign and return to it later from your workspace.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">05 / Pricing</div>
+          <h2>Start free. Scale when the workflow proves itself.</h2>
+          <p class="section-lead">Pricing UI is ready for the product roadmap. Payment activation can be connected later.</p>
+        </div>
+
+        <div class="pricing">
+          <article class="price-card">
+            <h3>Free</h3>
+            <div class="price">$0</div>
+            <div class="price-desc">For testing the GrowthOS workflow.</div>
+            <ul class="price-list">
+              <li>3 generations</li>
+              <li>AI campaign kit</li>
+              <li>Save campaigns</li>
+            </ul>
+            <a href="#generator" class="btn">Start free</a>
+          </article>
+
+          <article class="price-card">
+            <h3>Starter</h3>
+            <div class="price">$19 <small>one-time</small></div>
+            <div class="price-desc">For a small business starting consistent marketing.</div>
+            <ul class="price-list">
+              <li>Expanded generation</li>
+              <li>Campaign workspace</li>
+              <li>More content assets</li>
+            </ul>
+            <button class="btn">Coming soon</button>
+          </article>
+
+          <article class="price-card featured">
+            <span class="popular">POPULAR</span>
+            <h3>Pro</h3>
+            <div class="price">$39 <small>/ month</small></div>
+            <div class="price-desc">For businesses running marketing every week.</div>
+            <ul class="price-list">
+              <li>Higher usage</li>
+              <li>Advanced campaigns</li>
+              <li>Priority features</li>
+            </ul>
+            <button class="btn btn-primary">Coming soon</button>
+          </article>
+
+          <article class="price-card">
+            <h3>Agency</h3>
+            <div class="price">$199 <small>/ month</small></div>
+            <div class="price-desc">For teams managing multiple client businesses.</div>
+            <ul class="price-list">
+              <li>Multiple workspaces</li>
+              <li>Client campaigns</li>
+              <li>Agency workflow</li>
+            </ul>
+            <button class="btn">Coming soon</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>© 2026 GrowthOS. AI marketing infrastructure for small businesses.</div>
+      <div>Built for speed · clarity · growth</div>
+    </div>
+  </footer>
+
+  <!-- LOGIN / SIGNUP MODAL -->
+  <div id="authModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h3 id="authTitle">Welcome to GrowthOS</h3>
+          <p id="authSubtitle">Login to save your marketing campaigns and access them later.</p>
+        </div>
+        <button id="closeAuth" class="close">×</button>
+      </div>
+
+      <div class="field">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" placeholder="Minimum 8 characters" autocomplete="current-password" />
+      </div>
+
+      <button id="authSubmit" class="btn btn-primary">Login</button>
+      <button id="forgotPassword" class="forgot">Forgot password?</button>
+      <button id="authMode" class="auth-switch">Create account</button>
+      <div id="authMessage" class="message"></div>
+    </div>
+  </div>
+
+  <!-- PASSWORD RESET MODAL -->
+  <div id="resetModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h3>Set a new password</h3>
+          <p>Your recovery link is valid. Choose a new password for your GrowthOS account.</p>
+        </div>
+        <button id="closeReset" class="close">×</button>
+      </div>
+
+      <div class="field">
+        <label for="resetPassword">New password</label>
+        <input id="resetPassword" type="password" placeholder="Minimum 8 characters" autocomplete="new-password" />
+      </div>
+
+      <div class="field">
+        <label for="resetPasswordConfirm">Confirm new password</label>
+        <input id="resetPasswordConfirm" type="password" placeholder="Repeat your password" autocomplete="new-password" />
+      </div>
+
+      <button id="resetSubmit" class="btn btn-primary">Update password</button>
+      <div id="resetMessage" class="message"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    window.growthosSupabase = supabase;
+
+    const $ = (id) => document.getElementById(id);
+
+    const loginBtn = $("loginBtn");
+    const logoutBtn = $("logoutBtn");
+    const dashboardBtn = $("dashboardBtn");
+    const dashboard = $("dashboard");
+
+    const authModal = $("authModal");
+    const authTitle = $("authTitle");
+    const authSubtitle = $("authSubtitle");
+    const authSubmit = $("authSubmit");
+    const authMode = $("authMode");
+    const closeAuth = $("closeAuth");
+    const authEmail = $("authEmail");
+    const authPassword = $("authPassword");
+    const authMessage = $("authMessage");
+    const forgotPassword = $("forgotPassword");
+
+    const resetModal = $("resetModal");
+    const closeReset = $("closeReset");
+    const resetPassword = $("resetPassword");
+    const resetPasswordConfirm = $("resetPasswordConfirm");
+    const resetSubmit = $("resetSubmit");
+    const resetMessage = $("resetMessage");
+
+    const campaignList = $("campaignList");
+    const campaignCount = $("campaignCount");
+    const refreshCampaigns = $("refreshCampaigns");
+
+    let signupMode = false;
+
+    function openAuth(){
+      authModal.style.display = "flex";
+      authMessage.textContent = "";
     }
 
-  }catch(error){
+    function closeAuthModal(){
+      authModal.style.display = "none";
+    }
 
-    authMessage.textContent=
-      error.message||"Authentication failed.";
+    function updateAuthMode(){
+      if(signupMode){
+        authTitle.textContent = "Create your GrowthOS account";
+        authSubtitle.textContent = "Save campaigns and access your marketing workspace anywhere.";
+        authSubmit.textContent = "Create Account";
+        authMode.textContent = "Already have an account? Login";
+        authPassword.autocomplete = "new-password";
+        forgotPassword.style.display = "none";
+      }else{
+        authTitle.textContent = "Welcome to GrowthOS";
+        authSubtitle.textContent = "Login to save your marketing campaigns and access them later.";
+        authSubmit.textContent = "Login";
+        authMode.textContent = "Create account";
+        authPassword.autocomplete = "current-password";
+        forgotPassword.style.display = "block";
+      }
+    }
 
-  }finally{
+    function updateAuthUI(session){
+      const loggedIn = !!session;
 
-    authSubmit.disabled=false;
+      loginBtn.style.display = loggedIn ? "none" : "block";
+      logoutBtn.style.display = loggedIn ? "block" : "none";
+      dashboardBtn.style.display = loggedIn ? "block" : "none";
+      dashboard.style.display = loggedIn ? "block" : "none";
 
-  }
+      if(loggedIn){
+        loadCampaigns();
+      }else{
+        campaignList.innerHTML = "";
+        campaignCount.textContent = "Login to see saved campaigns.";
+      }
+    }
 
-};
+    loginBtn.onclick = openAuth;
+    closeAuth.onclick = closeAuthModal;
 
-logoutBtn.onclick=async()=>{
+    authMode.onclick = () => {
+      signupMode = !signupMode;
+      updateAuthMode();
+      authMessage.textContent = "";
+    };
 
-  await supabase.auth.signOut();
+    forgotPassword.onclick = async () => {
+      const email = authEmail.value.trim();
 
-};
+      if(!email){
+        authMessage.textContent = "Enter your email first.";
+        return;
+      }
 
-supabase.auth.onAuthStateChange((_event,session)=>{
+      forgotPassword.disabled = true;
+      authMessage.textContent = "Sending password reset link...";
 
-  updateAuthUI(session);
+      try{
+        const redirectTo = window.location.origin + window.location.pathname;
 
-});
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo
+        });
 
-const {data:{session}}=await supabase.auth.getSession();
+        if(error) throw error;
 
-updateAuthUI(session);
+        authMessage.textContent =
+          "Password reset link sent. Check your email.";
+      }catch(error){
+        authMessage.textContent =
+          error.message || "Could not send password reset email.";
+      }finally{
+        forgotPassword.disabled = false;
+      }
+    };
 
-updateAuthMode();
+    authSubmit.onclick = async () => {
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
 
+      if(!email || !password){
+        authMessage.textContent = "Please enter your email and password.";
+        return;
+      }
 
-window.saveMarketingKit=async function(data){
+      if(password.length < 8){
+        authMessage.textContent = "Password must be at least 8 characters.";
+        return;
+      }
 
-  const {data:{user}}=await supabase.auth.getUser();
+      authSubmit.disabled = true;
+      authMessage.textContent =
+        signupMode ? "Creating your account..." : "Logging in...";
 
-  if(!user)return;
+      try{
+        if(signupMode){
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password
+          });
 
-  const {error}=await supabase
-    .from("marketing_kits")
-    .insert({
+          if(error) throw error;
 
-      user_id:user.id,
-      business_type:data.type,
-      city:data.city,
-      product_service:data.offer,
-      target_customer:data.audience,
-      result:data.result
+          if(data.session){
+            closeAuthModal();
+          }else{
+            authMessage.textContent =
+              "Account created. Please check your email to confirm your account.";
+          }
+        }else{
+          const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
 
+          if(error) throw error;
+
+          closeAuthModal();
+        }
+      }catch(error){
+        authMessage.textContent =
+          error.message || "Authentication failed.";
+      }finally{
+        authSubmit.disabled = false;
+      }
+    };
+
+    logoutBtn.onclick = async () => {
+      await supabase.auth.signOut();
+    };
+
+    dashboardBtn.onclick = () => {
+      dashboard.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+    };
+
+    refreshCampaigns.onclick = loadCampaigns;
+
+    closeReset.onclick = () => {
+      resetModal.style.display = "none";
+    };
+
+    resetSubmit.onclick = async () => {
+      const password = resetPassword.value;
+      const confirm = resetPasswordConfirm.value;
+
+      if(!password || !confirm){
+        resetMessage.textContent = "Please fill both password fields.";
+        return;
+      }
+
+      if(password.length < 8){
+        resetMessage.textContent = "Password must be at least 8 characters.";
+        return;
+      }
+
+      if(password !== confirm){
+        resetMessage.textContent = "Passwords do not match.";
+        return;
+      }
+
+      resetSubmit.disabled = true;
+      resetMessage.textContent = "Updating password...";
+
+      try{
+        const { error } = await supabase.auth.updateUser({
+          password
+        });
+
+        if(error) throw error;
+
+        resetMessage.textContent =
+          "Password updated successfully. You can now use your new password.";
+
+        setTimeout(() => {
+          resetModal.style.display = "none";
+          resetPassword.value = "";
+          resetPasswordConfirm.value = "";
+          resetMessage.textContent = "";
+        }, 1600);
+      }catch(error){
+        resetMessage.textContent =
+          error.message || "Could not update password.";
+      }finally{
+        resetSubmit.disabled = false;
+      }
+    };
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      updateAuthUI(session);
+
+      if(event === "PASSWORD_RECOVERY"){
+        resetModal.style.display = "flex";
+        resetMessage.textContent = "Enter your new password.";
+      }
     });
 
-  if(error){
-
-    console.error(
-      "Could not save marketing kit:",
-      error
-    );
-
-  }
-
-};
-
-</script>
-
-
-<!-- GENERATOR LOGIC -->
-<script>
-
-const $=id=>document.getElementById(id);
-
-function escapeHtml(s){
-
-return String(s||"").replace(/[&<>"']/g,c=>({
-
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-
-}[c]));
-
-}
-
-
-function demo(type,city,offer){
-
-return {
-
-social_posts:
-`1. ${type} in ${city||"your area"}: 3 things customers should know before choosing ${offer}.
-
-2. A common mistake customers make when buying ${offer}.
-
-3. Why customers choose us for ${offer}.
-
-4. Quick tip: how to get more value from ${offer}.
-
-5. FAQ: Who is ${offer} best for?`,
-
-reel_hooks:
-`1. Stop scrolling if you need ${offer}.
-
-2. 3 mistakes to avoid before buying ${offer}.
-
-3. What nobody tells you about ${offer}.
-
-4. Before vs after: ${offer}.
-
-5. Is ${offer} actually worth it?`,
-
-offers:
-`1. New-customer starter package.
-
-2. Limited-time consultation or assessment.
-
-3. Refer-a-friend customer bonus.`,
-
-review_response:
-`Thank you for your feedback and for trusting us. We're glad we could help and appreciate your support.`
-
-};
-
-}
-
-
-function copyText(text,button){
-
-navigator.clipboard.writeText(text);
-
-const original=button.textContent;
-
-button.textContent="Copied ✓";
-
-setTimeout(()=>{
-
-button.textContent=original;
-
-},1500);
-
-}
-
-
-function show(data){
-
-$("emptyState").style.display="none";
-$("results").style.display="block";
-
-const sections=[
-
-["Social Posts",data.social_posts],
-["Reel Hooks",data.reel_hooks],
-["Offers",data.offers],
-["Review Response",data.review_response]
-
-];
-
-$("output").innerHTML=sections.map((x,index)=>`
-
-<div class="output-section">
-
-<h3>${x[0]}</h3>
-
-<div class="out" id="output-${index}">
-${escapeHtml(x[1])}
-</div>
-
-<button
-class="copy-btn"
-onclick="copyText(document.getElementById('output-${index}').innerText,this)">
-Copy
-</button>
-
-</div>
-
-`).join("");
-
-$("results").scrollIntoView({
-behavior:"smooth",
-block:"start"
-});
-
-}
-
-
-$("go").onclick=async()=>{
-
-const type=$("type").value.trim();
-const city=$("city").value.trim();
-const offer=$("offer").value.trim();
-const audience=$("audience").value.trim();
-
-if(!type||!offer){
-
-$("status").textContent=
-"Please complete the required fields.";
-
-return;
-
-}
-
-$("go").disabled=true;
-
-$("status").textContent=
-"GrowthOS AI is building your campaign...";
-
-try{
-
-const response=await fetch("/api/generate",{
-
-method:"POST",
-
-headers:{
-"content-type":"application/json"
-},
-
-body:JSON.stringify({
-
-type,
-city,
-offer,
-audience
-
-})
-
-});
-
-const data=await response.json();
-
-if(!response.ok)
-throw new Error(data.error||"Request failed");
-
-show(data);
-
-if(window.saveMarketingKit){
-
-window.saveMarketingKit({
-
-type,
-city,
-offer,
-audience,
-result:data
-
-});
-
-}
-
-$("status").textContent=
-"Marketing kit generated successfully ✓";
-
-}catch(error){
-
-const result=demo(type,city,offer);
-
-show(result);
-
-if(window.saveMarketingKit){
-
-window.saveMarketingKit({
-
-type,
-city,
-offer,
-audience,
-result
-
-});
-
-}
-
-$("status").textContent=
-"Demo mode active — AI backend connection is pending.";
-
-}finally{
-
-$("go").disabled=false;
-
-}
-
-};
-
-</script>
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+
+    updateAuthUI(session);
+    updateAuthMode();
+
+    async function loadCampaigns(){
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+
+      if(!user){
+        campaignCount.textContent = "Login to see saved campaigns.";
+        campaignList.innerHTML = "";
+        return;
+      }
+
+      campaignCount.textContent = "Loading saved campaigns...";
+      campaignList.innerHTML = "";
+
+      const { data, error } = await supabase
+        .from("marketing_kits")
+        .select(`
+          id,
+          business_type,
+          city,
+          product_service,
+          target_customer,
+          result,
+          created_at
+        `)
+        .order("created_at", { ascending:false });
+
+      if(error){
+        console.error("Could not load campaigns:", error);
+        campaignCount.textContent = "Could not load campaigns.";
+        campaignList.innerHTML = `
+          <div class="empty-dashboard">
+            There was a problem loading your campaigns.
+          </div>
+        `;
+        return;
+      }
+
+      const campaigns = data || [];
+      campaignCount.textContent =
+        `${campaigns.length} saved campaign${campaigns.length === 1 ? "" : "s"}`;
+
+      if(!campaigns.length){
+        campaignList.innerHTML = `
+          <div class="empty-dashboard" style="grid-column:1/-1">
+            No saved campaigns yet. Generate your first campaign above.
+          </div>
+        `;
+        return;
+      }
+
+      campaignList.innerHTML = campaigns.map((kit) => {
+        const date = new Date(kit.created_at).toLocaleString();
+        const location = kit.city ? ` · ${escapeHtml(kit.city)}` : "";
+
+        return `
+          <article class="campaign-card">
+            <span class="campaign-type">${escapeHtml(kit.business_type)}</span>
+            <h4>${escapeHtml(kit.product_service)}</h4>
+            <p>${escapeHtml(kit.target_customer || "General customer")}${location}</p>
+            <div class="campaign-date">${escapeHtml(date)}</div>
+
+            <div class="campaign-actions">
+              <button class="btn btn-small open-campaign" data-id="${kit.id}">Open</button>
+              <button class="btn btn-small delete-campaign" data-id="${kit.id}">Delete</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".open-campaign").forEach((button) => {
+        button.addEventListener("click", () => {
+          const kit = campaigns.find(item => item.id === button.dataset.id);
+
+          if(!kit) return;
+
+          if(window.showMarketingKit){
+            window.showMarketingKit(kit.result);
+          }
+
+          $("generator").scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+          });
+        });
+      });
+
+      document.querySelectorAll(".delete-campaign").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const confirmed = confirm("Delete this saved campaign?");
+
+          if(!confirmed) return;
+
+          button.disabled = true;
+          button.textContent = "Deleting...";
+
+          const { error } = await supabase
+            .from("marketing_kits")
+            .delete()
+            .eq("id", button.dataset.id);
+
+          if(error){
+            console.error("Delete failed:", error);
+            button.disabled = false;
+            button.textContent = "Delete";
+            alert("Could not delete this campaign.");
+            return;
+          }
+
+          await loadCampaigns();
+        });
+      });
+    }
+
+    window.saveMarketingKit = async function(data){
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+
+      if(!user){
+        return {
+          success:false,
+          error:"Please login before saving campaigns."
+        };
+      }
+
+      const {
+        data: savedKit,
+        error
+      } = await supabase
+        .from("marketing_kits")
+        .insert({
+          user_id:user.id,
+          business_type:data.type,
+          city:data.city || null,
+          product_service:data.offer,
+          target_customer:data.audience || null,
+          result:data.result
+        })
+        .select()
+        .single();
+
+      if(error){
+        console.error("Marketing kit save failed:", error);
+
+        return {
+          success:false,
+          error:error.message
+        };
+      }
+
+      return {
+        success:true,
+        data:savedKit
+      };
+    };
+
+    window.loadCampaigns = loadCampaigns;
+
+    function escapeHtml(value){
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[char]));
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if(event.key === "Escape"){
+        authModal.style.display = "none";
+        resetModal.style.display = "none";
+      }
+    });
+  </script>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(value){
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[char]));
+    }
+
+    function copyText(text, button){
+      navigator.clipboard.writeText(text).then(() => {
+        const original = button.textContent;
+        button.textContent = "Copied ✓";
+
+        setTimeout(() => {
+          button.textContent = original;
+        }, 1500);
+      });
+    }
+
+    function showMarketingKit(data){
+      $("emptyState").style.display = "none";
+      $("output").style.display = "block";
+
+      const sections = [
+        ["Social Posts", data.social_posts],
+        ["Reel Hooks", data.reel_hooks],
+        ["Offers", data.offers],
+        ["Review Response", data.review_response]
+      ];
+
+      $("output").innerHTML = sections.map((section, index) => `
+        <div class="output-section">
+          <h3>${section[0]}</h3>
+          <div class="out" id="output-${index}">
+            ${escapeHtml(section[1])}
+          </div>
+          <button
+            class="copy-btn"
+            onclick="copyText(document.getElementById('output-${index}').innerText,this)">
+            Copy
+          </button>
+        </div>
+      `).join("");
+
+      $("results").scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+    }
+
+    window.showMarketingKit = showMarketingKit;
+    window.copyText = copyText;
+
+    $("go").onclick = async () => {
+      const type = $("type").value.trim();
+      const city = $("city").value.trim();
+      const offer = $("offer").value.trim();
+      const audience = $("audience").value.trim();
+
+      if(!type || !offer){
+        $("status").textContent =
+          "Business type and main offer are required.";
+        return;
+      }
+
+      $("go").disabled = true;
+      $("status").textContent =
+        "GrowthOS AI is building your campaign...";
+
+      try{
+        const response = await fetch("/api/generate", {
+          method:"POST",
+          headers:{
+            "content-type":"application/json"
+          },
+          body:JSON.stringify({
+            type,
+            city,
+            offer,
+            audience
+          })
+        });
+
+        const data = await response.json();
+
+        if(!response.ok){
+          throw new Error(data.error || "AI request failed.");
+        }
+
+        showMarketingKit(data);
+
+        if(window.saveMarketingKit){
+          const saveResult = await window.saveMarketingKit({
+            type,
+            city,
+            offer,
+            audience,
+            result:data
+          });
+
+          if(saveResult.success){
+            $("status").textContent =
+              "Campaign generated and saved ✓";
+
+            if(window.loadCampaigns){
+              await window.loadCampaigns();
+            }
+          }else{
+            $("status").textContent =
+              "Campaign generated, but it could not be saved: " +
+              saveResult.error;
+          }
+        }else{
+          $("status").textContent =
+            "Campaign generated successfully ✓";
+        }
+
+      }catch(error){
+        console.error(error);
+
+        $("status").textContent =
+          error.message || "Could not generate campaign.";
+      }finally{
+        $("go").disabled = false;
+      }
+    };
+  </script>
 
 </body>
 </html>
