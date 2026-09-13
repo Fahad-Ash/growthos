@@ -12,6 +12,6 @@ binding = "ASSETS"
 required = [
   "GEMINI_API_KEY",
   "SUPABASE_URL",
-  "SUPABASE_SECRET_KEY"
+  "SUPABASE_SECRET_KEY",
   "SUPABASE_ANON_KEY"
 ]
